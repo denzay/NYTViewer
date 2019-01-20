@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
+import android.support.annotation.DrawableRes;
 import android.widget.ImageView;
 
 import java.io.InputStream;
@@ -36,8 +37,7 @@ public class AsyncImageDownloader extends AsyncTask<String, Void, Bitmap> {
                 if (bitmap != null) {
                     imageView.setImageBitmap(bitmap);
                 } else {
-                    Drawable placeholder = imageView.getContext().getResources().getDrawable(R.drawable.sample_image);
-                    imageView.setImageDrawable(placeholder);
+                    setDefaultImage(imageView, R.drawable.user_placeholder);
                 }
             }
         }
@@ -60,12 +60,21 @@ public class AsyncImageDownloader extends AsyncTask<String, Void, Bitmap> {
                 return bitmap;
             }
         } catch (Exception e) {
-            // ToDo: сделать нормальную обработку
+            if (mImgView != null) {
+                ImageView imageView = mImgView.get();
+                setDefaultImage(imageView, R.drawable.user_placeholder_error);
+            }
         } finally {
             if (urlConnection != null) {
                 urlConnection.disconnect();
             }
         }
         return null;
+    }
+
+    private void setDefaultImage(ImageView aImageView, @DrawableRes int aResId) {
+        if (aImageView == null) return;
+        Drawable placeholder = aImageView.getContext().getResources().getDrawable(aResId);
+        aImageView.setImageDrawable(placeholder);
     }
 }

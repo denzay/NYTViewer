@@ -21,9 +21,7 @@
         android:layout_height="293dp"
         android:layout_margin="@dimen/image_margin"
         android:scaleType="centerCrop"
-        tools:srcCompat="@drawable/sample_image" />
-    <!--tools:srcCompat="@tools:sample/avatars[3]" />-->
-
+        tools:srcCompat="@drawable/user_placeholder" />
 
     <TextView
         android:id="@+id/tv_Description"

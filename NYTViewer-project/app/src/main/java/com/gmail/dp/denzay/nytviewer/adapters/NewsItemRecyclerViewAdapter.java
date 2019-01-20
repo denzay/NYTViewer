@@ -11,6 +11,7 @@ import com.gmail.dp.denzay.nytviewer.AsyncImageDownloader;
 import com.gmail.dp.denzay.nytviewer.R;
 import com.gmail.dp.denzay.nytviewer.views.NewsListFragment.OnListFragmentInteractionListener;
 import com.gmail.dp.denzay.nytviewer.models.NewsContent.NewsItem;
+import com.squareup.picasso.Picasso;
 
 
 import java.util.List;
@@ -42,7 +43,9 @@ public class NewsItemRecyclerViewAdapter extends RecyclerView.Adapter<NewsItemRe
         holder.mItem = mValues.get(position);
         holder.mTitleView.setText(holder.mItem.title);
         holder.mDescView.setText(holder.mItem.shortDescription);
-       // holder.mImageView.setImageResource(R.drawable.sample_image);
+
+       // можно использовать либо Picasso, либо загрузчик на AsyncTask
+       // Picasso.get().load(holder.mItem.imgUrl).placeholder(R.drawable.user_placeholder).error(R.drawable.user_placeholder_error).into(holder.mImageView);
         new AsyncImageDownloader(holder.mImageView).execute(holder.mItem.imgUrl);
 
         holder.mView.setOnClickListener( (View v) -> {
