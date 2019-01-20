@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.gmail.dp.denzay.nytviewer.AsyncImageDownloader;
 import com.gmail.dp.denzay.nytviewer.R;
 import com.gmail.dp.denzay.nytviewer.views.NewsListFragment.OnListFragmentInteractionListener;
 import com.gmail.dp.denzay.nytviewer.models.NewsContent.NewsItem;
@@ -39,17 +40,14 @@ public class NewsItemRecyclerViewAdapter extends RecyclerView.Adapter<NewsItemRe
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.mItem = mValues.get(position);
-        holder.mTitleView.setText(mValues.get(position).title);
-        holder.mImageView.setImageResource(R.drawable.sample_image);
+        holder.mTitleView.setText(holder.mItem.title);
+        holder.mDescView.setText(holder.mItem.shortDescription);
+       // holder.mImageView.setImageResource(R.drawable.sample_image);
+        new AsyncImageDownloader(holder.mImageView).execute(holder.mItem.imgUrl);
 
-        holder.mView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (null != mListener) {
-                    // Notify the active callbacks interface (the activity, if the
-                    // fragment is attached to one) that an item has been selected.
-                    mListener.onListFragmentInteraction(holder.mItem);
-                }
+        holder.mView.setOnClickListener( (View v) -> {
+            if (null != mListener) {
+                mListener.onListFragmentInteraction(holder.mItem);
             }
         });
     }
@@ -62,6 +60,7 @@ public class NewsItemRecyclerViewAdapter extends RecyclerView.Adapter<NewsItemRe
     public class ViewHolder extends RecyclerView.ViewHolder {
         public final View mView;
         public final TextView mTitleView;
+        public final TextView mDescView;
         public final ImageView mImageView;
         public NewsItem mItem;
 
@@ -69,6 +68,7 @@ public class NewsItemRecyclerViewAdapter extends RecyclerView.Adapter<NewsItemRe
             super(view);
             mView = view;
             mTitleView = (TextView) view.findViewById(R.id.tv_Title);
+            mDescView = (TextView) view.findViewById(R.id.tv_Description);
             mImageView = (ImageView) view.findViewById(R.id.iv_PreviewImage);
         }
 

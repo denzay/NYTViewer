@@ -11,20 +11,36 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/text_margin"
+        android:fontFamily="@font/alfa_slab_one"
         android:text="tv_Title"
         android:textAppearance="?attr/textAppearanceListItem" />
 
     <ImageView
         android:id="@+id/iv_PreviewImage"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:srcCompat="@tools:sample/avatars[3]" />
+        android:layout_height="293dp"
+        android:layout_margin="@dimen/image_margin"
+        android:scaleType="centerCrop"
+        tools:srcCompat="@drawable/sample_image" />
+    <!--tools:srcCompat="@tools:sample/avatars[3]" />-->
+
+
+    <TextView
+        android:id="@+id/tv_Description"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/text_margin"
+        android:layout_marginRight="@dimen/text_margin"
+        android:fontFamily="@font/stoke_light"
+        android:text="tv_Description"
+        android:textColor="#000000"
+        android:textStyle="bold" />
 
     <View
         android:id="@+id/v_Separator"
         android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_marginTop="0dp"
+        android:layout_height="5dp"
+        android:layout_marginTop="3dp"
         android:background="@color/colorGray" />
 
 </LinearLayout>

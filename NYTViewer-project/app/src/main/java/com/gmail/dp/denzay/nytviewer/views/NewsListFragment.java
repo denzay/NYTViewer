@@ -1,13 +1,19 @@
 package com.gmail.dp.denzay.nytviewer.views;
 
 import android.content.Context;
+import android.media.Image;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CursorAdapter;
 import android.widget.Toast;
 
 import com.gmail.dp.denzay.nytviewer.R;
@@ -17,6 +23,7 @@ import com.gmail.dp.denzay.nytviewer.adapters.NewsItemRecyclerViewAdapter;
 import com.gmail.dp.denzay.nytviewer.models.AbstractResponse;
 import com.gmail.dp.denzay.nytviewer.models.AbstractResponseResult;
 import com.gmail.dp.denzay.nytviewer.models.EmailedResponse;
+import com.gmail.dp.denzay.nytviewer.models.MediaInfoItem;
 import com.gmail.dp.denzay.nytviewer.models.NewsContent;
 import com.gmail.dp.denzay.nytviewer.models.NewsContent.NewsItem;
 import com.gmail.dp.denzay.nytviewer.models.SharedResponse;
@@ -46,6 +53,7 @@ public class NewsListFragment extends Fragment {
     private OnListFragmentInteractionListener mListener;
     private NewsItemRecyclerViewAdapter mNewsItemRecyclerViewAdapter;
     private NewsContent mNewsContent = new NewsContent();
+    private LoaderManager mLoaderManager;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -87,7 +95,6 @@ public class NewsListFragment extends Fragment {
         }
         return view;
     }
-
 
     @Override
     public void onAttach(Context context) {
@@ -187,7 +194,11 @@ public class NewsListFragment extends Fragment {
 
 
         for (AbstractResponseResult item: listResults) {
-            mNewsContent.addItem(new NewsItem(item.getId(), item.getTitle(), ""));
+            String imageUrl = null;
+            MediaInfoItem.ImageInfoItem imageInfoItem = item.getLargeImageInfo();
+            if (imageInfoItem != null)
+                imageUrl = imageInfoItem.getUrl();
+            mNewsContent.addItem(new NewsItem(item.getId(), item.getTitle(), item.getShortDesc(), imageUrl));
         }
         mNewsItemRecyclerViewAdapter.notifyDataSetChanged();
     }

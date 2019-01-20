@@ -14,11 +14,13 @@ public class NewsContent {
     public static class NewsItem {
         public final long id;
         public final String title;
+        public final String shortDescription;
         public final String imgUrl;
 
-        public NewsItem(long id, String title, String imgUrl) {
+        public NewsItem(long id, String title, String shortDescription, String imgUrl) {
             this.id = id;
             this.title = title;
+            this.shortDescription = shortDescription;
             this.imgUrl = imgUrl;
         }
 
