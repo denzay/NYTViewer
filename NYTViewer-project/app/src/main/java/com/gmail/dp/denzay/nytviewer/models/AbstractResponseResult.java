@@ -6,6 +6,9 @@ import com.google.gson.annotations.SerializedName;
 import java.util.Date;
 
 public abstract class AbstractResponseResult {
+    @SerializedName("id")
+    @Expose
+    protected long id;
     @SerializedName("url")
     @Expose
     protected String url;
@@ -34,4 +37,6 @@ public abstract class AbstractResponseResult {
     public Date getPublishedDate() {
         return publishedDate;
     }
+
+    public long getId() { return id; }
 }
