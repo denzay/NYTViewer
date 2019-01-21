@@ -1,19 +1,15 @@
 package com.gmail.dp.denzay.nytviewer.views;
 
 import android.content.Context;
-import android.media.Image;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.Loader;
+
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CursorAdapter;
 import android.widget.Toast;
 
 import com.gmail.dp.denzay.nytviewer.R;
@@ -35,12 +31,6 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-/**
- * A fragment representing a list of Items.
- * <p/>
- * Activities containing this fragment MUST implement the {@link OnListFragmentInteractionListener}
- * interface.
- */
 public class NewsListFragment extends Fragment {
 
     private static final String API_KEY = "Ny86Hu9i2xN81axhZNlgms8TGAydLikN";
@@ -53,11 +43,8 @@ public class NewsListFragment extends Fragment {
     private OnListFragmentInteractionListener mListener;
     private NewsItemRecyclerViewAdapter mNewsItemRecyclerViewAdapter;
     private NewsContent mNewsContent = new NewsContent();
+    private SwipeRefreshLayout mSwipeRefreshLayout;
 
-    /**
-     * Mandatory empty constructor for the fragment manager to instantiate the
-     * fragment (e.g. upon screen orientation changes).
-     */
     public NewsListFragment() {
     }
 
@@ -80,7 +67,13 @@ public class NewsListFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_newsitem_list, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_newsitem_list, container, false);
+
+        mSwipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.swipe_container);
+        mSwipeRefreshLayout.setOnRefreshListener(() -> doLoadNews(mFragmentType));
+        mSwipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary);
+
+        View view = (RecyclerView) rootView.findViewById(R.id.list);
         // Set the adapter
         if (view instanceof RecyclerView) {
             Context context = view.getContext();
@@ -90,7 +83,7 @@ public class NewsListFragment extends Fragment {
             mNewsItemRecyclerViewAdapter = new NewsItemRecyclerViewAdapter(mNewsContent.getItems(), mListener);
             recyclerView.setAdapter(mNewsItemRecyclerViewAdapter);
         }
-        return view;
+        return rootView;
     }
 
     @Override
@@ -99,8 +92,7 @@ public class NewsListFragment extends Fragment {
         if (context instanceof OnListFragmentInteractionListener) {
             mListener = (OnListFragmentInteractionListener) context;
         } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnListFragmentInteractionListener");
+            throw new RuntimeException(context.toString() + " must implement OnListFragmentInteractionListener");
         }
     }
 
@@ -110,22 +102,14 @@ public class NewsListFragment extends Fragment {
         mListener = null;
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
+    // callback to activity
     public interface OnListFragmentInteractionListener {
-        // TODO: Update argument type and name
         void onListFragmentInteraction(NewsItem item);
     }
 
     private void doLoadNews(NewsFragmentType aNewsFragmentType) {
+        mSwipeRefreshLayout.setRefreshing(true);
+
         NYTAPI nytAPI = NYTRequestAdapter.getInstance().getNYTAPI();
         switch (aNewsFragmentType) {
             case nftEmailed:
@@ -180,6 +164,8 @@ public class NewsListFragment extends Fragment {
     };
 
     private void processSuccessResponse(AbstractResponse response) {
+        mSwipeRefreshLayout.setRefreshing(false);
+
         List<? extends AbstractResponseResult> listResults;
         if (response instanceof EmailedResponse) {
             listResults = ((EmailedResponse) response).getResults();
@@ -201,6 +187,7 @@ public class NewsListFragment extends Fragment {
     }
 
     private void processFailResponse(Throwable t) {
+        mSwipeRefreshLayout.setRefreshing(false);
         Toast.makeText(getActivity(), t.getMessage(), Toast.LENGTH_LONG).show();
     }
 }

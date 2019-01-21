@@ -21,11 +21,13 @@
 
         <ImageView
             android:id="@+id/iv_PreviewImage"
-            android:layout_width="395dp"
+            android:layout_width="0dp"
             android:layout_height="277dp"
-            android:layout_marginStart="5dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginLeft="@dimen/image_margin"
+            android:layout_marginRight="@dimen/image_margin"
             android:scaleType="centerCrop"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:srcCompat="@drawable/user_placeholder" />
@@ -48,6 +50,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/text_margin"
+        android:layout_marginTop="@dimen/image_margin"
         android:layout_marginRight="@dimen/text_margin"
         android:fontFamily="@font/stoke_light"
         android:text="tv_Description"
