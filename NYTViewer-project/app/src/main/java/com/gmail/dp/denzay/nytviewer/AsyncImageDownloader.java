@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.support.annotation.DrawableRes;
+import android.util.LruCache;
 
 import com.gmail.dp.denzay.nytviewer.adapters.NewsItemRecyclerViewAdapter;
 
@@ -15,8 +16,19 @@ import java.net.URL;
 
 public class AsyncImageDownloader extends AsyncTask<String, Void, Bitmap> {
 
+    private final static int CACHE_SIZE = 50 * 1024 * 1024; // 50 MiB
     private final WeakReference<Context> mContext;
     private final WeakReference<NewsItemRecyclerViewAdapter.OnImageDownloadCompleteListener> mCallback;
+    private final static LruCache<String, Bitmap> memoryCache;
+
+    static {
+        memoryCache = new LruCache<String, Bitmap>(CACHE_SIZE) {
+            @Override
+            protected int sizeOf(String key, Bitmap value) {
+                return value.getByteCount();
+            }
+        };
+    }
 
     public AsyncImageDownloader(Context aContext, NewsItemRecyclerViewAdapter.OnImageDownloadCompleteListener aCallback) {
         mContext = new WeakReference<Context>(aContext);
@@ -25,7 +37,12 @@ public class AsyncImageDownloader extends AsyncTask<String, Void, Bitmap> {
 
     @Override
     protected Bitmap doInBackground(String... strings) {
-        return downloadBitmap(strings[0]);
+        String aURl = strings[0];
+        Bitmap result;
+        result = memoryCache.get(aURl);
+        if (result == null)
+            result = downloadBitmap(aURl);
+        return result;
     }
 
     @Override
@@ -45,11 +62,11 @@ public class AsyncImageDownloader extends AsyncTask<String, Void, Bitmap> {
         }
     }
 
-    private Bitmap downloadBitmap(String url) {
+    private Bitmap downloadBitmap(String aUrl) {
         HttpURLConnection urlConnection = null;
 
         try {
-            URL uri = new URL(url);
+            URL uri = new URL(aUrl);
             urlConnection = (HttpURLConnection) uri.openConnection();
             int statusCode = urlConnection.getResponseCode();
             if (statusCode != HttpURLConnection.HTTP_OK) {
@@ -59,6 +76,7 @@ public class AsyncImageDownloader extends AsyncTask<String, Void, Bitmap> {
             InputStream inputStream = urlConnection.getInputStream();
             if (inputStream != null) {
                 Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+                memoryCache.put(aUrl, bitmap);
                 return bitmap;
             }
         } catch (Exception e) {
