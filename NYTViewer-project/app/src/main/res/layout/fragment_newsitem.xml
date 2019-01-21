@@ -15,13 +15,33 @@
         android:text="tv_Title"
         android:textAppearance="?attr/textAppearanceListItem" />
 
-    <ImageView
-        android:id="@+id/iv_PreviewImage"
+    <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="293dp"
-        android:layout_margin="@dimen/image_margin"
-        android:scaleType="centerCrop"
-        tools:srcCompat="@drawable/user_placeholder" />
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/iv_PreviewImage"
+            android:layout_width="395dp"
+            android:layout_height="277dp"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="8dp"
+            android:scaleType="centerCrop"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:srcCompat="@drawable/user_placeholder" />
+
+        <ProgressBar
+            android:id="@+id/pb_ImageLoadingProgress"
+            style="?android:attr/progressBarStyleLarge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </android.support.constraint.ConstraintLayout>
 
     <TextView
         android:id="@+id/tv_Description"

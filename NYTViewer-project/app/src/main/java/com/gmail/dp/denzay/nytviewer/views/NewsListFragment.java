@@ -53,7 +53,6 @@ public class NewsListFragment extends Fragment {
     private OnListFragmentInteractionListener mListener;
     private NewsItemRecyclerViewAdapter mNewsItemRecyclerViewAdapter;
     private NewsContent mNewsContent = new NewsContent();
-    private LoaderManager mLoaderManager;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -62,8 +61,6 @@ public class NewsListFragment extends Fragment {
     public NewsListFragment() {
     }
 
-    // TODO: Customize parameter initialization
-    @SuppressWarnings("unused")
     public static NewsListFragment newInstance(NewsFragmentType newsFragmentType) {
         NewsListFragment fragment = new NewsListFragment();
         Bundle args = new Bundle();

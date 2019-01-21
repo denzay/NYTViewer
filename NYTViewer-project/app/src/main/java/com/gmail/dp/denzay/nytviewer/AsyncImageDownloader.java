@@ -1,11 +1,12 @@
 package com.gmail.dp.denzay.nytviewer;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.support.annotation.DrawableRes;
-import android.widget.ImageView;
+
+import com.gmail.dp.denzay.nytviewer.adapters.NewsItemRecyclerViewAdapter;
 
 import java.io.InputStream;
 import java.lang.ref.WeakReference;
@@ -14,10 +15,12 @@ import java.net.URL;
 
 public class AsyncImageDownloader extends AsyncTask<String, Void, Bitmap> {
 
-    private final WeakReference<ImageView> mImgView;
+    private final WeakReference<Context> mContext;
+    private final WeakReference<NewsItemRecyclerViewAdapter.OnImageDownloadCompleteListener> mCallback;
 
-    public AsyncImageDownloader(ImageView aImgView) {
-        mImgView = new WeakReference<ImageView>(aImgView);
+    public AsyncImageDownloader(Context aContext, NewsItemRecyclerViewAdapter.OnImageDownloadCompleteListener aCallback) {
+        mContext = new WeakReference<Context>(aContext);
+        mCallback = new WeakReference<NewsItemRecyclerViewAdapter.OnImageDownloadCompleteListener>(aCallback);
     }
 
     @Override
@@ -31,14 +34,13 @@ public class AsyncImageDownloader extends AsyncTask<String, Void, Bitmap> {
         if (isCancelled()) {
             bitmap = null;
         }
-        if (mImgView != null) {
-            ImageView imageView = mImgView.get();
-            if (imageView != null) {
-                if (bitmap != null) {
-                    imageView.setImageBitmap(bitmap);
-                } else {
-                    setDefaultImage(imageView, R.drawable.user_placeholder);
-                }
+
+        NewsItemRecyclerViewAdapter.OnImageDownloadCompleteListener callback = mCallback.get();
+        if (callback != null) {
+            if (bitmap != null) {
+                callback.OnImageDownloadComplete(bitmap);
+            } else {
+                returnDefaultImage(R.drawable.user_placeholder);
             }
         }
     }
@@ -51,7 +53,7 @@ public class AsyncImageDownloader extends AsyncTask<String, Void, Bitmap> {
             urlConnection = (HttpURLConnection) uri.openConnection();
             int statusCode = urlConnection.getResponseCode();
             if (statusCode != HttpURLConnection.HTTP_OK) {
-                return null;
+                returnDefaultImage(R.drawable.user_placeholder_error);
             }
 
             InputStream inputStream = urlConnection.getInputStream();
@@ -60,10 +62,7 @@ public class AsyncImageDownloader extends AsyncTask<String, Void, Bitmap> {
                 return bitmap;
             }
         } catch (Exception e) {
-            if (mImgView != null) {
-                ImageView imageView = mImgView.get();
-                setDefaultImage(imageView, R.drawable.user_placeholder_error);
-            }
+            returnDefaultImage(R.drawable.user_placeholder_error);
         } finally {
             if (urlConnection != null) {
                 urlConnection.disconnect();
@@ -72,9 +71,12 @@ public class AsyncImageDownloader extends AsyncTask<String, Void, Bitmap> {
         return null;
     }
 
-    private void setDefaultImage(ImageView aImageView, @DrawableRes int aResId) {
-        if (aImageView == null) return;
-        Drawable placeholder = aImageView.getContext().getResources().getDrawable(aResId);
-        aImageView.setImageDrawable(placeholder);
+    private void returnDefaultImage(@DrawableRes int aResId) {
+        Context context = mContext.get();
+        NewsItemRecyclerViewAdapter.OnImageDownloadCompleteListener callback = mCallback.get();
+        if ((callback == null) || (context == null)) return;
+
+        Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), aResId);
+        callback.OnImageDownloadComplete(bitmap);
     }
 }
