@@ -181,7 +181,7 @@ public class NewsListFragment extends Fragment {
             MediaInfoItem.ImageInfoItem imageInfoItem = item.getLargeImageInfo();
             if (imageInfoItem != null)
                 imageUrl = imageInfoItem.getUrl();
-            mNewsContent.addItem(new NewsItem(item.getId(), item.getTitle(), item.getShortDesc(), imageUrl));
+            mNewsContent.addItem(new NewsItem(item.getId(), item.getUrl(), item.getTitle(), item.getShortDesc(), imageUrl));
         }
         mNewsItemRecyclerViewAdapter.notifyDataSetChanged();
     }
