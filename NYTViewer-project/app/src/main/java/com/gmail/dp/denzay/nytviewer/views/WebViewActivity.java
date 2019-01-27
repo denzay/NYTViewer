@@ -1,5 +1,6 @@
 package com.gmail.dp.denzay.nytviewer.views;
 
+import android.content.ContentValues;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
@@ -7,13 +8,17 @@ import android.view.MenuItem;
 import android.webkit.WebView;
 
 import com.gmail.dp.denzay.nytviewer.R;
+import com.gmail.dp.denzay.nytviewer.data.FavouriteCachedDBProvider;
+import com.gmail.dp.denzay.nytviewer.data.FavouriteCachedContract.FavouriteCachedEntry;
+import com.gmail.dp.denzay.nytviewer.models.NewsContent.NewsItem;
 
 public class WebViewActivity extends AppCompatActivity {
 
-    public static final String KEY_URL = "URL";
+    public static final String KEY_NEWS_ITEM = "NEWS_ITEM";
 
     private WebView mWebView;
     private boolean mIsFavourite;
+    private NewsItem mNewsItem;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,13 +26,14 @@ public class WebViewActivity extends AppCompatActivity {
         setContentView(R.layout.activity_web_view);
         mWebView = findViewById(R.id.wb_WebView);
 
+        Bundle arguments = getIntent().getExtras();
+        mNewsItem = arguments.getParcelable(KEY_NEWS_ITEM);
+
         if (savedInstanceState != null) {
             mWebView.restoreState(savedInstanceState);
         } else {
-            Bundle arguments = getIntent().getExtras();
-            String url = arguments.get(KEY_URL).toString();
-            if (url != "") {
-                mWebView.loadUrl(url);
+            if ((mNewsItem != null) && (mNewsItem.url != "")) {
+                mWebView.loadUrl(mNewsItem.url);
             }
         }
         mIsFavourite = false;
@@ -50,7 +56,11 @@ public class WebViewActivity extends AppCompatActivity {
         String fileName = getExternalFilesDir(null).getAbsolutePath() + "/";
 
         mWebView.saveWebArchive(fileName, true, (String value) -> {
-           // ToDo: save path to db
+            ContentValues values = new ContentValues();
+            values.put(FavouriteCachedEntry.COLUMN_NAME_ARTICLE_ID, mNewsItem.id);
+            values.put(FavouriteCachedEntry.COLUMN_NAME_TITLE, mNewsItem.title);
+            values.put(FavouriteCachedEntry.COLUMN_NAME_PATH, value);
+            FavouriteCachedDBProvider.getInstance(this).insertValues(FavouriteCachedEntry.TABLE_NAME, values);
         });
     }
 
@@ -75,6 +85,4 @@ public class WebViewActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
-
-
 }

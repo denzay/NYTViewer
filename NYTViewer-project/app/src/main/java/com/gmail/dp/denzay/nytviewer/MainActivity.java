@@ -95,7 +95,7 @@ public class MainActivity extends AppCompatActivity implements NewsListFragment.
     @Override
     public void onListFragmentInteraction(NewsContent.NewsItem item) {
         Intent intent = new Intent(this, WebViewActivity.class);
-        intent.putExtra(WebViewActivity.KEY_URL, item.url);
+        intent.putExtra(WebViewActivity.KEY_NEWS_ITEM, item);
         startActivity(intent);
     }
 
