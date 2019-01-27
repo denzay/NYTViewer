@@ -12,6 +12,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.gmail.dp.denzay.nytviewer.adapters.SectionsPagerAdapter;
+import com.gmail.dp.denzay.nytviewer.data.FavouriteCachedDBProvider;
 import com.gmail.dp.denzay.nytviewer.views.NewsListFragment;
 import com.gmail.dp.denzay.nytviewer.models.NewsContent;
 import com.gmail.dp.denzay.nytviewer.views.WebViewActivity;
@@ -27,6 +28,7 @@ public class MainActivity extends AppCompatActivity implements NewsListFragment.
      * {@link android.support.v4.app.FragmentStatePagerAdapter}.
      */
     private SectionsPagerAdapter mSectionsPagerAdapter;
+    private FavouriteCachedDBProvider mDBProvider;
 
     /**
      * The {@link ViewPager} that will host the section contents.
@@ -37,6 +39,10 @@ public class MainActivity extends AppCompatActivity implements NewsListFragment.
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        mDBProvider = FavouriteCachedDBProvider.getInstance(this);
+        if (!mDBProvider.isConnected())
+            mDBProvider.connect();
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -52,6 +58,16 @@ public class MainActivity extends AppCompatActivity implements NewsListFragment.
 
         mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(mViewPager));
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (mDBProvider != null) {
+            mDBProvider.disconnect();
+            mDBProvider = null;
+        }
+        super.onDestroy();
     }
 
     @Override

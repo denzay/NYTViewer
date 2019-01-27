@@ -1,7 +1,7 @@
 package com.gmail.dp.denzay.nytviewer.views;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.webkit.WebView;
@@ -30,7 +30,6 @@ public class WebViewActivity extends AppCompatActivity {
                 mWebView.loadUrl(url);
             }
         }
-
         mIsFavourite = false;
     }
 
@@ -45,6 +44,14 @@ public class WebViewActivity extends AppCompatActivity {
             aMenuItem.setIcon(R.drawable.ic_star);
         else
             aMenuItem.setIcon(R.drawable.ic_star_border);
+    }
+
+    private void saveWebPageToCache() {
+        String fileName = getExternalFilesDir(null).getAbsolutePath() + "/";
+
+        mWebView.saveWebArchive(fileName, true, (String value) -> {
+           // ToDo: save path to db
+        });
     }
 
     @Override
@@ -62,8 +69,12 @@ public class WebViewActivity extends AppCompatActivity {
             case R.id.action_add_to_favorites:
                 mIsFavourite = !mIsFavourite;
                 updateFavouriteMenuIcon(item);
+                if (mIsFavourite)
+                    saveWebPageToCache();
                 return true;
         }
         return super.onOptionsItemSelected(item);
     }
+
+
 }
