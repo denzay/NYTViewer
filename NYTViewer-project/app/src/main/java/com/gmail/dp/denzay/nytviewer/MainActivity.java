@@ -12,7 +12,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.gmail.dp.denzay.nytviewer.adapters.SectionsPagerAdapter;
-import com.gmail.dp.denzay.nytviewer.data.FavouriteCachedDBProvider;
+import com.gmail.dp.denzay.nytviewer.data.DBProvider;
 import com.gmail.dp.denzay.nytviewer.views.NewsListFragment;
 import com.gmail.dp.denzay.nytviewer.models.NewsContent;
 import com.gmail.dp.denzay.nytviewer.views.WebViewActivity;
@@ -28,7 +28,7 @@ public class MainActivity extends AppCompatActivity implements NewsListFragment.
      * {@link android.support.v4.app.FragmentStatePagerAdapter}.
      */
     private SectionsPagerAdapter mSectionsPagerAdapter;
-    private FavouriteCachedDBProvider mDBProvider;
+    private DBProvider mDBProvider;
 
     /**
      * The {@link ViewPager} that will host the section contents.
@@ -40,7 +40,7 @@ public class MainActivity extends AppCompatActivity implements NewsListFragment.
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mDBProvider = FavouriteCachedDBProvider.getInstance(this);
+        mDBProvider = DBProvider.getInstance(this);
         if (!mDBProvider.isConnected())
             mDBProvider.connect();
 

@@ -7,29 +7,29 @@ import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-public final class FavouriteCachedDBProvider {
+public final class DBProvider {
 
     private FavouriteCachedDBHelper mDbHelper;
     private SQLiteDatabase mDB = null;
 
-    private static FavouriteCachedDBProvider mInstance = null;
+    private static DBProvider mInstance = null;
 
-    public static FavouriteCachedDBProvider getInstance(Context aContext) {
+    public synchronized static DBProvider getInstance(Context aContext) {
         if (mInstance == null)
-            mInstance = new FavouriteCachedDBProvider(aContext);
+            mInstance = new DBProvider(aContext);
         return mInstance;
     }
 
-    private FavouriteCachedDBProvider(Context aContext) {
+    private DBProvider(Context aContext) {
         mDbHelper = new FavouriteCachedDBHelper(aContext);
     }
 
-    public void connect(){
+    public synchronized void connect(){
         if (!isConnected())
             mDB = mDbHelper.getWritableDatabase();
     }
 
-    public void disconnect() {
+    public synchronized void disconnect() {
         if (isConnected()) {
             mDB.close();
             mDB = null;
