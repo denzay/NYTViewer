@@ -13,8 +13,9 @@ import android.view.MenuItem;
 
 import com.gmail.dp.denzay.nytviewer.adapters.SectionsPagerAdapter;
 import com.gmail.dp.denzay.nytviewer.data.DBProvider;
+import com.gmail.dp.denzay.nytviewer.models.NewsItem;
+import com.gmail.dp.denzay.nytviewer.views.FavouritesActivity;
 import com.gmail.dp.denzay.nytviewer.views.NewsListFragment;
-import com.gmail.dp.denzay.nytviewer.models.NewsContent;
 import com.gmail.dp.denzay.nytviewer.views.WebViewActivity;
 
 public class MainActivity extends AppCompatActivity implements NewsListFragment.OnListFragmentInteractionListener {
@@ -79,13 +80,10 @@ public class MainActivity extends AppCompatActivity implements NewsListFragment.
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_view_favourites) {
+            showFavouritesActivity();
             return true;
         }
 
@@ -93,9 +91,14 @@ public class MainActivity extends AppCompatActivity implements NewsListFragment.
     }
 
     @Override
-    public void onListFragmentInteraction(NewsContent.NewsItem item) {
+    public void onListFragmentInteraction(NewsItem item) {
         Intent intent = new Intent(this, WebViewActivity.class);
         intent.putExtra(WebViewActivity.KEY_NEWS_ITEM, item);
+        startActivity(intent);
+    }
+
+    private void showFavouritesActivity() {
+        Intent intent = new Intent(this, FavouritesActivity.class);
         startActivity(intent);
     }
 

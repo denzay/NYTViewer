@@ -13,7 +13,7 @@ import android.webkit.WebView;
 import com.gmail.dp.denzay.nytviewer.R;
 import com.gmail.dp.denzay.nytviewer.data.DBProvider;
 import com.gmail.dp.denzay.nytviewer.data.FavouriteCachedContract.FavouriteCachedEntry;
-import com.gmail.dp.denzay.nytviewer.models.NewsContent.NewsItem;
+import com.gmail.dp.denzay.nytviewer.models.NewsItem;
 
 import java.io.File;
 import java.util.concurrent.atomic.AtomicBoolean;

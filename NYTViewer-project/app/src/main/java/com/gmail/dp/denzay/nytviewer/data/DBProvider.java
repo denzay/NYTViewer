@@ -90,5 +90,32 @@ public final class DBProvider {
         execSQL(sql);
     }
 
+    public static short getShortValue(Cursor aCursor, String aFieldName) {
+        return aCursor.getShort(aCursor.getColumnIndex(aFieldName));
+    }
+
+    public static int getIntValue(Cursor aCursor, String aFieldName) {
+        return aCursor.getInt(aCursor.getColumnIndex(aFieldName));
+    }
+
+    public static long getLongValue(Cursor aCursor, String aFieldName) {
+        return aCursor.getLong(aCursor.getColumnIndex(aFieldName));
+    }
+
+    public static float getFloatValue(Cursor aCursor, String aFieldName) {
+        return aCursor.getFloat(aCursor.getColumnIndex(aFieldName));
+    }
+
+    public static double getDoubleValue(Cursor aCursor, String aFieldName) {
+        return aCursor.getDouble(aCursor.getColumnIndex(aFieldName));
+    }
+
+    public static String geStringValue(Cursor aCursor, String aFieldName) {
+        return aCursor.getString(aCursor.getColumnIndex(aFieldName));
+    }
+
+    public static byte[] geBlobValue(Cursor aCursor, String aFieldName) {
+        return aCursor.getBlob(aCursor.getColumnIndex(aFieldName));
+    }
 
 }

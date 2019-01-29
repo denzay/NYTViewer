@@ -10,6 +10,7 @@ public final class FavouriteCachedContract {
         public static final String TABLE_NAME = "cached_pages";
         public static final String COLUMN_NAME_ARTICLE_ID = "article_id";
         public static final String COLUMN_NAME_TITLE = "title";
+        public static final String COLUMN_NAME_DESCRIPTION = "description";
         public static final String COLUMN_NAME_PATH = "path";
     }
 

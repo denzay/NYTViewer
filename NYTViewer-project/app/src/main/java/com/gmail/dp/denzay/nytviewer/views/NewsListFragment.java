@@ -21,7 +21,7 @@ import com.gmail.dp.denzay.nytviewer.models.AbstractResponseResult;
 import com.gmail.dp.denzay.nytviewer.models.EmailedResponse;
 import com.gmail.dp.denzay.nytviewer.models.MediaInfoItem;
 import com.gmail.dp.denzay.nytviewer.models.NewsContent;
-import com.gmail.dp.denzay.nytviewer.models.NewsContent.NewsItem;
+import com.gmail.dp.denzay.nytviewer.models.NewsItem;
 import com.gmail.dp.denzay.nytviewer.models.SharedResponse;
 import com.gmail.dp.denzay.nytviewer.models.ViewedResponse;
 
