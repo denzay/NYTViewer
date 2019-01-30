@@ -12,7 +12,7 @@ import android.widget.TextView;
 
 import com.gmail.dp.denzay.nytviewer.AsyncImageDownloader;
 import com.gmail.dp.denzay.nytviewer.R;
-import com.gmail.dp.denzay.nytviewer.views.NewsListFragment.OnListFragmentInteractionListener;
+import com.gmail.dp.denzay.nytviewer.views.OnListFragmentInteractionListener;
 import com.gmail.dp.denzay.nytviewer.models.NewsItem;
 
 
@@ -21,7 +21,7 @@ import java.util.List;
 public class NewsItemRecyclerViewAdapter extends RecyclerView.Adapter<NewsItemRecyclerViewAdapter.ViewHolder> {
 
     protected final List<NewsItem> mValues;
-    private final OnListFragmentInteractionListener mListener;
+    protected final OnListFragmentInteractionListener mListener;
 
     public NewsItemRecyclerViewAdapter(List<NewsItem> items, OnListFragmentInteractionListener listener) {
         mValues = items;
@@ -57,7 +57,7 @@ public class NewsItemRecyclerViewAdapter extends RecyclerView.Adapter<NewsItemRe
 
         new AsyncImageDownloader(holder.mImageView.getContext(), holder.mCallback).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, holder.mItem.imgUrl);
         holder.mView.setOnClickListener( (View v) -> {
-            if (null != mListener) {
+            if (mListener != null) {
                 mListener.onListFragmentInteraction(holder.mItem);
             }
         });

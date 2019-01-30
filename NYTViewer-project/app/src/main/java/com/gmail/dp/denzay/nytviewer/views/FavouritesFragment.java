@@ -1,6 +1,7 @@
 package com.gmail.dp.denzay.nytviewer.views;
 
 
+import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -27,6 +28,7 @@ public class FavouritesFragment extends Fragment {
     private static final int MSG_LOAD_COMPLETE = 1;
 
     private NewsItemFavouritesRecyclerViewAdapter mAdapter;
+    private OnListFragmentInteractionListener mListener;
     private Handler mHandler;
     private NewsContent mNewsContent = new NewsContent();
 
@@ -38,7 +40,7 @@ public class FavouritesFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_newsitem_list_favourites, container, false);
         getActivity().setTitle(R.string.action_favourites);
 
-        mAdapter = new NewsItemFavouritesRecyclerViewAdapter(mNewsContent.getItems());
+        mAdapter = new NewsItemFavouritesRecyclerViewAdapter(mNewsContent.getItems(), mListener);
         if (rootView instanceof RecyclerView)
             ((RecyclerView) rootView).setAdapter(mAdapter);
 
@@ -50,6 +52,22 @@ public class FavouritesFragment extends Fragment {
 
         LoadNewsContentFromDB();
         return rootView;
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof OnListFragmentInteractionListener) {
+            mListener = (OnListFragmentInteractionListener) context;
+        } else {
+            throw new RuntimeException(context.toString() + " must implement OnListFragmentInteractionListener");
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mListener = null;
     }
 
     private void LoadNewsContentFromDB() {

@@ -102,11 +102,6 @@ public class NewsListFragment extends Fragment {
         mListener = null;
     }
 
-    // callback to activity
-    public interface OnListFragmentInteractionListener {
-        void onListFragmentInteraction(NewsItem item);
-    }
-
     private void doLoadNews(NewsFragmentType aNewsFragmentType) {
         mSwipeRefreshLayout.setRefreshing(true);
 

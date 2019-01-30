@@ -15,10 +15,10 @@ import com.gmail.dp.denzay.nytviewer.adapters.SectionsPagerAdapter;
 import com.gmail.dp.denzay.nytviewer.data.DBProvider;
 import com.gmail.dp.denzay.nytviewer.models.NewsItem;
 import com.gmail.dp.denzay.nytviewer.views.FavouritesActivity;
-import com.gmail.dp.denzay.nytviewer.views.NewsListFragment;
+import com.gmail.dp.denzay.nytviewer.views.OnListFragmentInteractionListener;
 import com.gmail.dp.denzay.nytviewer.views.WebViewActivity;
 
-public class MainActivity extends AppCompatActivity implements NewsListFragment.OnListFragmentInteractionListener {
+public class MainActivity extends AppCompatActivity implements OnListFragmentInteractionListener {
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -94,6 +94,7 @@ public class MainActivity extends AppCompatActivity implements NewsListFragment.
     public void onListFragmentInteraction(NewsItem item) {
         Intent intent = new Intent(this, WebViewActivity.class);
         intent.putExtra(WebViewActivity.KEY_NEWS_ITEM, item);
+        intent.putExtra(WebViewActivity.KEY_IS_CACHED_ITEM,  false);
         startActivity(intent);
     }
 

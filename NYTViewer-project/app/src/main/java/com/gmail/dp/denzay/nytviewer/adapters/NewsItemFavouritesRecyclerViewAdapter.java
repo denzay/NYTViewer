@@ -3,18 +3,14 @@ package com.gmail.dp.denzay.nytviewer.adapters;
 import android.view.View;
 
 import com.gmail.dp.denzay.nytviewer.models.NewsItem;
-import com.gmail.dp.denzay.nytviewer.views.NewsListFragment;
+import com.gmail.dp.denzay.nytviewer.views.OnListFragmentInteractionListener;
 
 import java.util.List;
 
 public class NewsItemFavouritesRecyclerViewAdapter extends NewsItemRecyclerViewAdapter {
 
-    private NewsItemFavouritesRecyclerViewAdapter(List<NewsItem> items, NewsListFragment.OnListFragmentInteractionListener listener) {
+    public NewsItemFavouritesRecyclerViewAdapter(List<NewsItem> items, OnListFragmentInteractionListener listener) {
         super(items, listener);
-    }
-
-    public NewsItemFavouritesRecyclerViewAdapter(List<NewsItem> items) {
-        this(items, null);
     }
 
     @Override
@@ -24,6 +20,12 @@ public class NewsItemFavouritesRecyclerViewAdapter extends NewsItemRecyclerViewA
         holder.mDescView.setText(holder.mItem.shortDescription);
         holder.mProgressBar.setVisibility(View.GONE);
         holder.mImageView.setImageBitmap(holder.mItem.getBitmap());
+
+        holder.mView.setOnClickListener( (View v) -> {
+            if (mListener!= null) {
+                mListener.onListFragmentInteraction(holder.mItem);
+            }
+        });
     }
 
 }

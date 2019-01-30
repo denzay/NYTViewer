@@ -23,12 +23,14 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class WebViewActivity extends AppCompatActivity {
 
     public static final String KEY_NEWS_ITEM = "NEWS_ITEM";
+    public static final String KEY_IS_CACHED_ITEM = "IS_CACHED_ITEM";
     private static final String KEY_IS_FAVOURITE = "IS_FAVOURITE";
 
     private WebView mWebView;
     private AtomicBoolean mIsFavourite = new AtomicBoolean(false);
     private NewsItem mNewsItem;
     private Handler mHandler;
+    private boolean mIsCachedItem;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +40,7 @@ public class WebViewActivity extends AppCompatActivity {
 
         Bundle arguments = getIntent().getExtras();
         mNewsItem = arguments.getParcelable(KEY_NEWS_ITEM);
+        mIsCachedItem = arguments.getBoolean(KEY_IS_CACHED_ITEM);
 
         mHandler = new Handler((Message aMsg) -> {
             mIsFavourite.set(aMsg.what == 1);
@@ -51,8 +54,9 @@ public class WebViewActivity extends AppCompatActivity {
             invalidateOptionsMenu();
         } else {
             if ((mNewsItem != null) && (mNewsItem.url != "")) {
-                setPageCached();
-                mWebView.loadUrl(mNewsItem.url);
+                if (!mIsCachedItem)
+                    setPageCached();
+                mWebView.loadUrl(mIsCachedItem ? "file:///" + mNewsItem.url : mNewsItem.url);
             }
         }
     }
@@ -125,6 +129,8 @@ public class WebViewActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        if (mIsCachedItem)
+            return true;
         getMenuInflater().inflate(R.menu.menu_web_view, menu);
         MenuItem menuItem = menu.getItem(0);
         updateFavouriteMenuIcon(menuItem);
@@ -133,7 +139,8 @@ public class WebViewActivity extends AppCompatActivity {
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        updateFavouriteMenuIcon(menu.getItem(0));
+        if (!mIsCachedItem)
+            updateFavouriteMenuIcon(menu.getItem(0));
         return true;
     }
 
