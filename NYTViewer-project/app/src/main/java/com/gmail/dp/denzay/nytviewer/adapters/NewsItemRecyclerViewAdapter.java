@@ -87,6 +87,7 @@ public class NewsItemRecyclerViewAdapter extends RecyclerView.Adapter<NewsItemRe
             // замыкаем коллбек на текущем вьюхолдере, для управления конкретным ImageView и ProgressBar
             mCallback = (Bitmap aBitmap) -> {
                 if (aBitmap != null)
+                    mItem.setBitmap(aBitmap);
                     mImageView.setImageBitmap(aBitmap);
                 mProgressBar.setVisibility(View.GONE);
             };

@@ -114,7 +114,7 @@ public final class DBProvider {
         return aCursor.getString(aCursor.getColumnIndex(aFieldName));
     }
 
-    public static byte[] geBlobValue(Cursor aCursor, String aFieldName) {
+    public static byte[] getBlobValue(Cursor aCursor, String aFieldName) {
         return aCursor.getBlob(aCursor.getColumnIndex(aFieldName));
     }
 

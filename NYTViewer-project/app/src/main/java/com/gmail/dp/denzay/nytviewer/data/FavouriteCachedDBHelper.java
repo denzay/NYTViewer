@@ -12,10 +12,12 @@ public class FavouriteCachedDBHelper extends SQLiteOpenHelper {
 
     private static final String SQL_CREATE_ENTRIES =
             "CREATE TABLE " + FavouriteCachedEntry.TABLE_NAME + " (" +
-                    FavouriteCachedEntry._ID + " INTEGER PRIMARY KEY," +
-                    FavouriteCachedEntry.COLUMN_NAME_ARTICLE_ID + " INTEGER, " +
-                    FavouriteCachedEntry.COLUMN_NAME_TITLE + " TEXT," +
-                    FavouriteCachedEntry.COLUMN_NAME_PATH + " TEXT)";
+                    FavouriteCachedEntry._ID + " INTEGER PRIMARY KEY, " +
+                    FavouriteCachedEntry.COLUMN_NAME_ARTICLE_ID + " INTEGER NOT NULL, " +
+                    FavouriteCachedEntry.COLUMN_NAME_TITLE + " TEXT NOT NULL," +
+                    FavouriteCachedEntry.COLUMN_NAME_DESCRIPTION + " TEXT, " +
+                    FavouriteCachedEntry.COLUMN_NAME_PATH + " TEXT NOT NULL, " +
+                    FavouriteCachedEntry.COLUMN_NAME_PICTURE + " BLOB )";
 
     private static final String SQL_CREATE_INDEX_ARTICLE_ID =
         "CREATE UNIQUE INDEX IF NOT EXISTS UniqueArticleID ON " +

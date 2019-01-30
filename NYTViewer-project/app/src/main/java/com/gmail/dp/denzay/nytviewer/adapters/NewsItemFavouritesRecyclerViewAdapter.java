@@ -22,7 +22,8 @@ public class NewsItemFavouritesRecyclerViewAdapter extends NewsItemRecyclerViewA
         holder.mItem = mValues.get(position);
         holder.mTitleView.setText(holder.mItem.title);
         holder.mDescView.setText(holder.mItem.shortDescription);
-        holder.mProgressBar.setVisibility(View.VISIBLE);
+        holder.mProgressBar.setVisibility(View.GONE);
+        holder.mImageView.setImageBitmap(holder.mItem.getBitmap());
     }
 
 }

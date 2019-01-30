@@ -1,6 +1,7 @@
 package com.gmail.dp.denzay.nytviewer.views;
 
 import android.content.ContentValues;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -15,6 +16,7 @@ import com.gmail.dp.denzay.nytviewer.data.DBProvider;
 import com.gmail.dp.denzay.nytviewer.data.FavouriteCachedContract.FavouriteCachedEntry;
 import com.gmail.dp.denzay.nytviewer.models.NewsItem;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -76,7 +78,13 @@ public class WebViewActivity extends AppCompatActivity {
                 ContentValues values = new ContentValues();
                 values.put(FavouriteCachedEntry.COLUMN_NAME_ARTICLE_ID, mNewsItem.id);
                 values.put(FavouriteCachedEntry.COLUMN_NAME_TITLE, mNewsItem.title);
+                values.put(FavouriteCachedEntry.COLUMN_NAME_DESCRIPTION, mNewsItem.shortDescription);
                 values.put(FavouriteCachedEntry.COLUMN_NAME_PATH, value);
+
+                ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                mNewsItem.getBitmap().compress(Bitmap.CompressFormat.PNG, 100, stream);
+                byte[] byteArray = stream.toByteArray();
+                values.put(FavouriteCachedEntry.COLUMN_NAME_PICTURE, byteArray);
                 DBProvider.getInstance(WebViewActivity.this).insertValues(FavouriteCachedEntry.TABLE_NAME, values);
             });
             t.start();
