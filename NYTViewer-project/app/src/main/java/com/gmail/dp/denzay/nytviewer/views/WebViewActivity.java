@@ -1,7 +1,5 @@
 package com.gmail.dp.denzay.nytviewer.views;
 
-import android.content.ContentValues;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -12,11 +10,9 @@ import android.view.MenuItem;
 import android.webkit.WebView;
 
 import com.gmail.dp.denzay.nytviewer.R;
-import com.gmail.dp.denzay.nytviewer.data.DBProvider;
-import com.gmail.dp.denzay.nytviewer.data.FavouriteCachedContract.FavouriteCachedEntry;
+import com.gmail.dp.denzay.nytviewer.adapters.FavouritesDBAdapter;
 import com.gmail.dp.denzay.nytviewer.models.NewsItem;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -79,17 +75,7 @@ public class WebViewActivity extends AppCompatActivity {
         String fileName = getExternalFilesDir(null).getAbsolutePath() + "/";
         mWebView.saveWebArchive(fileName, true, (String value) -> {
             Thread t = new Thread(() -> {
-                ContentValues values = new ContentValues();
-                values.put(FavouriteCachedEntry.COLUMN_NAME_ARTICLE_ID, mNewsItem.id);
-                values.put(FavouriteCachedEntry.COLUMN_NAME_TITLE, mNewsItem.title);
-                values.put(FavouriteCachedEntry.COLUMN_NAME_DESCRIPTION, mNewsItem.shortDescription);
-                values.put(FavouriteCachedEntry.COLUMN_NAME_PATH, value);
-
-                ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                mNewsItem.getBitmap().compress(Bitmap.CompressFormat.PNG, 100, stream);
-                byte[] byteArray = stream.toByteArray();
-                values.put(FavouriteCachedEntry.COLUMN_NAME_PICTURE, byteArray);
-                DBProvider.getInstance(WebViewActivity.this).insertValues(FavouriteCachedEntry.TABLE_NAME, values);
+                FavouritesDBAdapter.getInstance().saveNewsItem(mNewsItem, value);
             });
             t.start();
         });
@@ -97,16 +83,16 @@ public class WebViewActivity extends AppCompatActivity {
 
     private void deleteWebPageFromCache() {
         Thread t = new Thread(() -> {
-            String whereClause = FavouriteCachedEntry.COLUMN_NAME_ARTICLE_ID + " = " + mNewsItem.id;
+            FavouritesDBAdapter dbAdapter = FavouritesDBAdapter.getInstance();
+            String filePath = dbAdapter.getCachedNewsItemPath(mNewsItem.id);
 
-            DBProvider dbProvider = DBProvider.getInstance(WebViewActivity.this);
-            String filePath = dbProvider.DBLookup(FavouriteCachedEntry.TABLE_NAME, FavouriteCachedEntry.COLUMN_NAME_PATH, whereClause);
             if (filePath == null) return;
             File f = new File(filePath);
             if (!Environment.getExternalStorageState(f).equals(Environment.MEDIA_MOUNTED)) return;
             if (f.exists())
                 f.delete();
-            dbProvider.deleteValues(FavouriteCachedEntry.TABLE_NAME, whereClause);
+
+            dbAdapter.deleteNewsItem(mNewsItem.id);
         });
         t.start();
     }
@@ -114,9 +100,7 @@ public class WebViewActivity extends AppCompatActivity {
     private void setPageCached() {
         Thread t = new Thread(() -> {
             boolean result = false;
-            String whereClause = FavouriteCachedEntry.COLUMN_NAME_ARTICLE_ID + " = " + mNewsItem.id;
-            DBProvider dbProvider = DBProvider.getInstance(WebViewActivity.this);
-            String filePath = dbProvider.DBLookup(FavouriteCachedEntry.TABLE_NAME, FavouriteCachedEntry.COLUMN_NAME_PATH, whereClause);
+            String filePath = FavouritesDBAdapter.getInstance().getCachedNewsItemPath(mNewsItem.id);
             if (filePath != null) {
                 File f = new File(filePath);
                 if (Environment.getExternalStorageState(f).equals(Environment.MEDIA_MOUNTED))

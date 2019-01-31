@@ -2,9 +2,6 @@ package com.gmail.dp.denzay.nytviewer.views;
 
 
 import android.content.Context;
-import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -15,13 +12,13 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.gmail.dp.denzay.nytviewer.R;
+import com.gmail.dp.denzay.nytviewer.adapters.FavouritesDBAdapter;
 import com.gmail.dp.denzay.nytviewer.adapters.NewsItemFavouritesRecyclerViewAdapter;
-import com.gmail.dp.denzay.nytviewer.data.DBProvider;
-import com.gmail.dp.denzay.nytviewer.data.FavouriteCachedContract.*;
 import com.gmail.dp.denzay.nytviewer.models.NewsContent;
 import com.gmail.dp.denzay.nytviewer.models.NewsItem;
 
-import java.io.ByteArrayInputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 public class FavouritesFragment extends Fragment {
 
@@ -72,21 +69,11 @@ public class FavouritesFragment extends Fragment {
 
     private void LoadNewsContentFromDB() {
         Thread t = new Thread(() -> {
-           DBProvider dbProvider = DBProvider.getInstance(FavouritesFragment.this.getContext());
-           Cursor cursor = dbProvider.getSQL("SELECT * FROM " + FavouriteCachedEntry.TABLE_NAME);
-           try {
-               while(cursor.moveToNext()) {
-                   long id = DBProvider.getLongValue(cursor, FavouriteCachedEntry.COLUMN_NAME_ARTICLE_ID);
-                   String title = DBProvider.geStringValue(cursor, FavouriteCachedEntry.COLUMN_NAME_TITLE);
-                   String description = DBProvider.geStringValue(cursor, FavouriteCachedEntry.COLUMN_NAME_DESCRIPTION);
-                   String path = DBProvider.geStringValue(cursor, FavouriteCachedEntry.COLUMN_NAME_PATH);
-                   NewsItem item = new NewsItem(id, path, title, description, null);
-                   mNewsContent.addItem(item);
-               }
-           } finally {
-               cursor.close();
-               mHandler.sendEmptyMessage(MSG_LOAD_COMPLETE);
-           }
+           List<NewsItem> newsItemList = new ArrayList<>();
+           FavouritesDBAdapter.getInstance().loadNewsItems(newsItemList);
+           for (NewsItem newsItem : newsItemList)
+               mNewsContent.addItem(newsItem);
+           mHandler.sendEmptyMessage(MSG_LOAD_COMPLETE);
         });
         t.start();
     }

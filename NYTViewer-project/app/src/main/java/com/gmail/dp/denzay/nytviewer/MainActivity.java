@@ -1,18 +1,17 @@
 package com.gmail.dp.denzay.nytviewer;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.design.widget.TabLayout;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.gmail.dp.denzay.nytviewer.adapters.FavouritesDBAdapter;
 import com.gmail.dp.denzay.nytviewer.adapters.SectionsPagerAdapter;
-import com.gmail.dp.denzay.nytviewer.data.DBProvider;
 import com.gmail.dp.denzay.nytviewer.models.NewsItem;
 import com.gmail.dp.denzay.nytviewer.views.FavouritesActivity;
 import com.gmail.dp.denzay.nytviewer.views.OnListFragmentInteractionListener;
@@ -29,7 +28,7 @@ public class MainActivity extends AppCompatActivity implements OnListFragmentInt
      * {@link android.support.v4.app.FragmentStatePagerAdapter}.
      */
     private SectionsPagerAdapter mSectionsPagerAdapter;
-    private DBProvider mDBProvider;
+    private FavouritesDBAdapter mDBAdapter;
 
     /**
      * The {@link ViewPager} that will host the section contents.
@@ -41,9 +40,8 @@ public class MainActivity extends AppCompatActivity implements OnListFragmentInt
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mDBProvider = DBProvider.getInstance(this);
-        if (!mDBProvider.isConnected())
-            mDBProvider.connect();
+        mDBAdapter = FavouritesDBAdapter.getInstance();
+        mDBAdapter.connect(getApplicationContext());
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -64,10 +62,7 @@ public class MainActivity extends AppCompatActivity implements OnListFragmentInt
 
     @Override
     protected void onDestroy() {
-        if (mDBProvider != null) {
-            mDBProvider.disconnect();
-            mDBProvider = null;
-        }
+        mDBAdapter.disconnect();
         super.onDestroy();
     }
 
