@@ -5,13 +5,17 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.gmail.dp.denzay.nytviewer.R;
+import com.gmail.dp.denzay.nytviewer.adapters.CacheStorageAdapter;
 import com.gmail.dp.denzay.nytviewer.adapters.FavouritesDBAdapter;
 import com.gmail.dp.denzay.nytviewer.adapters.NewsItemFavouritesRecyclerViewAdapter;
 import com.gmail.dp.denzay.nytviewer.models.NewsContent;
@@ -38,8 +42,13 @@ public class FavouritesFragment extends Fragment {
         getActivity().setTitle(R.string.action_favourites);
 
         mAdapter = new NewsItemFavouritesRecyclerViewAdapter(mNewsContent.getItems(), mListener);
-        if (rootView instanceof RecyclerView)
-            ((RecyclerView) rootView).setAdapter(mAdapter);
+        if (rootView instanceof RecyclerView) {
+            RecyclerView recyclerView = ((RecyclerView) rootView);
+            recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 1));
+            recyclerView.setAdapter(mAdapter);
+
+            itemTouchHelper.attachToRecyclerView(recyclerView);
+        }
 
         mHandler = new Handler((Message aMsg) -> {
             if (aMsg.what == MSG_LOAD_COMPLETE)
@@ -50,6 +59,28 @@ public class FavouritesFragment extends Fragment {
         LoadNewsContentFromDB();
         return rootView;
     }
+
+    ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+        @Override
+
+        public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder viewHolder1) {
+            return false;
+        }
+
+        @Override
+        public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
+            int i = viewHolder.getAdapterPosition();
+            NewsItem newsItem = mAdapter.getItem(i);
+
+            FavouritesDBAdapter dbAdapter = FavouritesDBAdapter.getInstance();
+            String filePath = dbAdapter.getCachedNewsItemPath(newsItem.id);
+
+            CacheStorageAdapter.deleteFile(filePath);
+            dbAdapter.deleteNewsItem(newsItem.id);
+            mAdapter.removeItem(i);
+            mAdapter.notifyItemRemoved(i);
+        }
+    });
 
     @Override
     public void onAttach(Context context) {

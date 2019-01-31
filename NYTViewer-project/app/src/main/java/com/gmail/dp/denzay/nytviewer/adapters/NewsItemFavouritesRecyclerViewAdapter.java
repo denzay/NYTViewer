@@ -4,6 +4,7 @@ import android.os.AsyncTask;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 
 import com.gmail.dp.denzay.nytviewer.AsyncDBImageDownloader;
 import com.gmail.dp.denzay.nytviewer.R;
@@ -31,5 +32,13 @@ public class NewsItemFavouritesRecyclerViewAdapter extends NewsItemRecyclerViewA
                 mListener.onListFragmentInteraction(holder.mItem);
             }
         });
+    }
+
+    public NewsItem getItem(int aIndex) {
+        return mValues.get(aIndex);
+    }
+
+    public void removeItem(int aIndex) {
+        mValues.remove(aIndex);
     }
 }

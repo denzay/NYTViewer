@@ -10,6 +10,7 @@ import android.view.MenuItem;
 import android.webkit.WebView;
 
 import com.gmail.dp.denzay.nytviewer.R;
+import com.gmail.dp.denzay.nytviewer.adapters.CacheStorageAdapter;
 import com.gmail.dp.denzay.nytviewer.adapters.FavouritesDBAdapter;
 import com.gmail.dp.denzay.nytviewer.models.NewsItem;
 
@@ -72,7 +73,8 @@ public class WebViewActivity extends AppCompatActivity {
     }
 
     private void saveWebPageToCache() {
-        String fileName = getExternalFilesDir(null).getAbsolutePath() + "/";
+        String fileName = CacheStorageAdapter.getExternalFolderPath(this);
+
         mWebView.saveWebArchive(fileName, true, (String value) -> {
             Thread t = new Thread(() -> {
                 FavouritesDBAdapter.getInstance().saveNewsItem(mNewsItem, value);
@@ -86,12 +88,7 @@ public class WebViewActivity extends AppCompatActivity {
             FavouritesDBAdapter dbAdapter = FavouritesDBAdapter.getInstance();
             String filePath = dbAdapter.getCachedNewsItemPath(mNewsItem.id);
 
-            if (filePath == null) return;
-            File f = new File(filePath);
-            if (!Environment.getExternalStorageState(f).equals(Environment.MEDIA_MOUNTED)) return;
-            if (f.exists())
-                f.delete();
-
+            CacheStorageAdapter.deleteFile(filePath);
             dbAdapter.deleteNewsItem(mNewsItem.id);
         });
         t.start();
