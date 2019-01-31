@@ -68,6 +68,25 @@ public final class DBProvider {
         return result;
     }
 
+    @Nullable
+    public byte[] DBLookupBlob(@NonNull String aTableName, @NonNull String aColumn, @NonNull String aWhere) {
+        byte[] result = null;
+        String sql = "SELECT " + aColumn + " FROM " + aTableName;
+        if (aWhere != "")
+            sql += " WHERE " + aWhere;
+        sql += " LIMIT 1";
+
+        Cursor cursor = getSQL(sql);
+        try {
+            if (cursor.moveToNext()) {
+                result = cursor.getBlob(0);
+            }
+        } finally {
+            cursor.close();
+        }
+        return result;
+    }
+
     public boolean DBExists(@NonNull String aTableName, @NonNull String aColumn, @NonNull String aWhere) {
         return DBLookup(aTableName, aColumn, aWhere) != null;
     }

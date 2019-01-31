@@ -16,14 +16,13 @@ public class NewsItem implements Parcelable {
     public final String imgUrl;
     private Bitmap mBitmap;
 
-    public NewsItem(long id, String url, String title, String shortDescription, String imgUrl, @Nullable Bitmap bitmap) {
+    public NewsItem(long id, String url, String title, String shortDescription, String imgUrl) {
         this.id = id;
         this.url = url;
         this.title = title;
         this.shortDescription = shortDescription;
         this.imgUrl = imgUrl;
-        if (bitmap != null)
-            this.mBitmap = bitmap.copy(bitmap.getConfig(), false);
+        this.mBitmap = null;
     }
 
     @Override

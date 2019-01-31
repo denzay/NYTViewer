@@ -17,8 +17,8 @@ import java.net.URL;
 public class AsyncImageDownloader extends AsyncTask<String, Void, Bitmap> {
 
     private final static int CACHE_SIZE = 50 * 1024 * 1024; // 50 MiB
-    private final WeakReference<Context> mContext;
-    private final WeakReference<NewsItemRecyclerViewAdapter.OnImageDownloadCompleteListener> mCallback;
+    protected final WeakReference<Context> mContext;
+    protected final WeakReference<NewsItemRecyclerViewAdapter.OnImageDownloadCompleteListener> mCallback;
     private final static LruCache<String, Bitmap> memoryCache;
 
     static {

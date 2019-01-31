@@ -80,11 +80,7 @@ public class FavouritesFragment extends Fragment {
                    String title = DBProvider.geStringValue(cursor, FavouriteCachedEntry.COLUMN_NAME_TITLE);
                    String description = DBProvider.geStringValue(cursor, FavouriteCachedEntry.COLUMN_NAME_DESCRIPTION);
                    String path = DBProvider.geStringValue(cursor, FavouriteCachedEntry.COLUMN_NAME_PATH);
-                   byte[] picByteArray = DBProvider.getBlobValue(cursor, FavouriteCachedEntry.COLUMN_NAME_PICTURE);
-                   ByteArrayInputStream picStream = new ByteArrayInputStream(picByteArray);
-                   Bitmap bitmap = BitmapFactory.decodeStream(picStream);
-
-                   NewsItem item = new NewsItem(id, path, title, description, null, bitmap);
+                   NewsItem item = new NewsItem(id, path, title, description, null);
                    mNewsContent.addItem(item);
                }
            } finally {
