@@ -3,6 +3,9 @@
     <string name="tab_text_1">Most emailed</string>
     <string name="tab_text_2">Most shared</string>
     <string name="tab_text_3">Most viewed</string>
+    <string name="OK">OK</string>
+    <string name="Cancel">Cancel</string>
     <string name="action_favourites">Favourites</string>
-    <string name="section_format">Hello World from section: %1$d</string>
+    <string name="delete_dialog_title">Confirm delete&#8230;</string>
+    <string name="confirm_delete">Are you sure to delete?</string>
 </resources>

@@ -1,7 +1,9 @@
 package com.gmail.dp.denzay.nytviewer.views;
 
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -27,6 +29,7 @@ import java.util.List;
 public class FavouritesFragment extends Fragment {
 
     private static final int MSG_LOAD_COMPLETE = 1;
+    private static final int MSG_DELETE_COMPLETE = 2;
 
     private NewsItemFavouritesRecyclerViewAdapter mAdapter;
     private OnListFragmentInteractionListener mListener;
@@ -51,8 +54,15 @@ public class FavouritesFragment extends Fragment {
         }
 
         mHandler = new Handler((Message aMsg) -> {
-            if (aMsg.what == MSG_LOAD_COMPLETE)
-                mAdapter.notifyDataSetChanged();
+            switch (aMsg.what) {
+                case MSG_LOAD_COMPLETE:
+                    mAdapter.notifyDataSetChanged();
+                    break;
+                case MSG_DELETE_COMPLETE:
+                    mAdapter.removeItem(aMsg.arg1);
+                    mAdapter.notifyItemRemoved(aMsg.arg1);
+                    break;
+            }
             return true;
         });
 
@@ -69,16 +79,36 @@ public class FavouritesFragment extends Fragment {
 
         @Override
         public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
-            int i = viewHolder.getAdapterPosition();
-            NewsItem newsItem = mAdapter.getItem(i);
+            AlertDialog.Builder ad = new AlertDialog.Builder(getContext());
+            ad.setTitle(R.string.delete_dialog_title);
+            ad.setMessage(R.string.confirm_delete);
+            ad.setCancelable(true);
 
-            FavouritesDBAdapter dbAdapter = FavouritesDBAdapter.getInstance();
-            String filePath = dbAdapter.getCachedNewsItemPath(newsItem.id);
+            ad.setNegativeButton(R.string.Cancel, (DialogInterface dialog, int which) -> {
+                // Восстанавливаем обратно айтем, в случае отмены
+                int i = viewHolder.getAdapterPosition();
+                mAdapter.notifyItemChanged(i);
+            });
 
-            CacheStorageAdapter.deleteFile(filePath);
-            dbAdapter.deleteNewsItem(newsItem.id);
-            mAdapter.removeItem(i);
-            mAdapter.notifyItemRemoved(i);
+            ad.setPositiveButton(R.string.OK, (DialogInterface dialog, int which) -> {
+                Thread t = new Thread(() -> {
+                    int i = viewHolder.getAdapterPosition();
+                    NewsItem newsItem = mAdapter.getItem(i);
+
+                    FavouritesDBAdapter dbAdapter = FavouritesDBAdapter.getInstance();
+                    String filePath = dbAdapter.getCachedNewsItemPath(newsItem.id);
+
+                    CacheStorageAdapter.deleteFile(filePath);
+                    dbAdapter.deleteNewsItem(newsItem.id);
+
+                    Message msg = new Message();
+                    msg.what = MSG_DELETE_COMPLETE;
+                    msg.arg1 = i;
+                    mHandler.sendMessage(msg);
+                });
+                t.start();
+            });
+            ad.show();
         }
     });
 
