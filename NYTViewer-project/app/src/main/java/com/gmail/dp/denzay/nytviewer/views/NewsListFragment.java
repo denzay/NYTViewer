@@ -21,7 +21,7 @@ import com.gmail.dp.denzay.nytviewer.models.AbstractResponseResult;
 import com.gmail.dp.denzay.nytviewer.models.EmailedResponse;
 import com.gmail.dp.denzay.nytviewer.models.MediaInfoItem;
 import com.gmail.dp.denzay.nytviewer.models.NewsContent;
-import com.gmail.dp.denzay.nytviewer.models.NewsContent.NewsItem;
+import com.gmail.dp.denzay.nytviewer.models.NewsItem;
 import com.gmail.dp.denzay.nytviewer.models.SharedResponse;
 import com.gmail.dp.denzay.nytviewer.models.ViewedResponse;
 
@@ -100,11 +100,6 @@ public class NewsListFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
-    }
-
-    // callback to activity
-    public interface OnListFragmentInteractionListener {
-        void onListFragmentInteraction(NewsItem item);
     }
 
     private void doLoadNews(NewsFragmentType aNewsFragmentType) {

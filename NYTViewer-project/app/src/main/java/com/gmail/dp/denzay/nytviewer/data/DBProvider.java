@@ -68,6 +68,25 @@ public final class DBProvider {
         return result;
     }
 
+    @Nullable
+    public byte[] DBLookupBlob(@NonNull String aTableName, @NonNull String aColumn, @NonNull String aWhere) {
+        byte[] result = null;
+        String sql = "SELECT " + aColumn + " FROM " + aTableName;
+        if (aWhere != "")
+            sql += " WHERE " + aWhere;
+        sql += " LIMIT 1";
+
+        Cursor cursor = getSQL(sql);
+        try {
+            if (cursor.moveToNext()) {
+                result = cursor.getBlob(0);
+            }
+        } finally {
+            cursor.close();
+        }
+        return result;
+    }
+
     public boolean DBExists(@NonNull String aTableName, @NonNull String aColumn, @NonNull String aWhere) {
         return DBLookup(aTableName, aColumn, aWhere) != null;
     }
@@ -90,5 +109,32 @@ public final class DBProvider {
         execSQL(sql);
     }
 
+    public static short getShortValue(Cursor aCursor, String aFieldName) {
+        return aCursor.getShort(aCursor.getColumnIndex(aFieldName));
+    }
+
+    public static int getIntValue(Cursor aCursor, String aFieldName) {
+        return aCursor.getInt(aCursor.getColumnIndex(aFieldName));
+    }
+
+    public static long getLongValue(Cursor aCursor, String aFieldName) {
+        return aCursor.getLong(aCursor.getColumnIndex(aFieldName));
+    }
+
+    public static float getFloatValue(Cursor aCursor, String aFieldName) {
+        return aCursor.getFloat(aCursor.getColumnIndex(aFieldName));
+    }
+
+    public static double getDoubleValue(Cursor aCursor, String aFieldName) {
+        return aCursor.getDouble(aCursor.getColumnIndex(aFieldName));
+    }
+
+    public static String geStringValue(Cursor aCursor, String aFieldName) {
+        return aCursor.getString(aCursor.getColumnIndex(aFieldName));
+    }
+
+    public static byte[] getBlobValue(Cursor aCursor, String aFieldName) {
+        return aCursor.getBlob(aCursor.getColumnIndex(aFieldName));
+    }
 
 }

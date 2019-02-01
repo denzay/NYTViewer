@@ -1,23 +1,23 @@
 package com.gmail.dp.denzay.nytviewer;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.design.widget.TabLayout;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.gmail.dp.denzay.nytviewer.adapters.FavouritesDBAdapter;
 import com.gmail.dp.denzay.nytviewer.adapters.SectionsPagerAdapter;
-import com.gmail.dp.denzay.nytviewer.data.DBProvider;
-import com.gmail.dp.denzay.nytviewer.views.NewsListFragment;
-import com.gmail.dp.denzay.nytviewer.models.NewsContent;
+import com.gmail.dp.denzay.nytviewer.models.NewsItem;
+import com.gmail.dp.denzay.nytviewer.views.FavouritesActivity;
+import com.gmail.dp.denzay.nytviewer.views.OnListFragmentInteractionListener;
 import com.gmail.dp.denzay.nytviewer.views.WebViewActivity;
 
-public class MainActivity extends AppCompatActivity implements NewsListFragment.OnListFragmentInteractionListener {
+public class MainActivity extends AppCompatActivity implements OnListFragmentInteractionListener {
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -28,7 +28,7 @@ public class MainActivity extends AppCompatActivity implements NewsListFragment.
      * {@link android.support.v4.app.FragmentStatePagerAdapter}.
      */
     private SectionsPagerAdapter mSectionsPagerAdapter;
-    private DBProvider mDBProvider;
+    private FavouritesDBAdapter mDBAdapter;
 
     /**
      * The {@link ViewPager} that will host the section contents.
@@ -40,9 +40,8 @@ public class MainActivity extends AppCompatActivity implements NewsListFragment.
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mDBProvider = DBProvider.getInstance(this);
-        if (!mDBProvider.isConnected())
-            mDBProvider.connect();
+        mDBAdapter = FavouritesDBAdapter.getInstance();
+        mDBAdapter.connect(getApplicationContext());
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -63,10 +62,7 @@ public class MainActivity extends AppCompatActivity implements NewsListFragment.
 
     @Override
     protected void onDestroy() {
-        if (mDBProvider != null) {
-            mDBProvider.disconnect();
-            mDBProvider = null;
-        }
+        mDBAdapter.disconnect();
         super.onDestroy();
     }
 
@@ -79,13 +75,10 @@ public class MainActivity extends AppCompatActivity implements NewsListFragment.
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_view_favourites) {
+            showFavouritesActivity();
             return true;
         }
 
@@ -93,9 +86,15 @@ public class MainActivity extends AppCompatActivity implements NewsListFragment.
     }
 
     @Override
-    public void onListFragmentInteraction(NewsContent.NewsItem item) {
+    public void onListFragmentInteraction(NewsItem item) {
         Intent intent = new Intent(this, WebViewActivity.class);
         intent.putExtra(WebViewActivity.KEY_NEWS_ITEM, item);
+        intent.putExtra(WebViewActivity.KEY_IS_CACHED_ITEM,  false);
+        startActivity(intent);
+    }
+
+    private void showFavouritesActivity() {
+        Intent intent = new Intent(this, FavouritesActivity.class);
         startActivity(intent);
     }
 

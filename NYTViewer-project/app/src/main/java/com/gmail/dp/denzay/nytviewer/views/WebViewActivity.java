@@ -1,6 +1,5 @@
 package com.gmail.dp.denzay.nytviewer.views;
 
-import android.content.ContentValues;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -11,9 +10,9 @@ import android.view.MenuItem;
 import android.webkit.WebView;
 
 import com.gmail.dp.denzay.nytviewer.R;
-import com.gmail.dp.denzay.nytviewer.data.DBProvider;
-import com.gmail.dp.denzay.nytviewer.data.FavouriteCachedContract.FavouriteCachedEntry;
-import com.gmail.dp.denzay.nytviewer.models.NewsContent.NewsItem;
+import com.gmail.dp.denzay.nytviewer.adapters.CacheStorageAdapter;
+import com.gmail.dp.denzay.nytviewer.adapters.FavouritesDBAdapter;
+import com.gmail.dp.denzay.nytviewer.models.NewsItem;
 
 import java.io.File;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -21,12 +20,14 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class WebViewActivity extends AppCompatActivity {
 
     public static final String KEY_NEWS_ITEM = "NEWS_ITEM";
+    public static final String KEY_IS_CACHED_ITEM = "IS_CACHED_ITEM";
     private static final String KEY_IS_FAVOURITE = "IS_FAVOURITE";
 
     private WebView mWebView;
     private AtomicBoolean mIsFavourite = new AtomicBoolean(false);
     private NewsItem mNewsItem;
     private Handler mHandler;
+    private boolean mIsCachedItem;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +37,7 @@ public class WebViewActivity extends AppCompatActivity {
 
         Bundle arguments = getIntent().getExtras();
         mNewsItem = arguments.getParcelable(KEY_NEWS_ITEM);
+        mIsCachedItem = arguments.getBoolean(KEY_IS_CACHED_ITEM);
 
         mHandler = new Handler((Message aMsg) -> {
             mIsFavourite.set(aMsg.what == 1);
@@ -49,8 +51,9 @@ public class WebViewActivity extends AppCompatActivity {
             invalidateOptionsMenu();
         } else {
             if ((mNewsItem != null) && (mNewsItem.url != "")) {
-                setPageCached();
-                mWebView.loadUrl(mNewsItem.url);
+                if (!mIsCachedItem)
+                    setPageCached();
+                mWebView.loadUrl(mIsCachedItem ? "file:///" + mNewsItem.url : mNewsItem.url);
             }
         }
     }
@@ -70,14 +73,11 @@ public class WebViewActivity extends AppCompatActivity {
     }
 
     private void saveWebPageToCache() {
-        String fileName = getExternalFilesDir(null).getAbsolutePath() + "/";
+        String fileName = CacheStorageAdapter.getExternalFolderPath(this);
+
         mWebView.saveWebArchive(fileName, true, (String value) -> {
             Thread t = new Thread(() -> {
-                ContentValues values = new ContentValues();
-                values.put(FavouriteCachedEntry.COLUMN_NAME_ARTICLE_ID, mNewsItem.id);
-                values.put(FavouriteCachedEntry.COLUMN_NAME_TITLE, mNewsItem.title);
-                values.put(FavouriteCachedEntry.COLUMN_NAME_PATH, value);
-                DBProvider.getInstance(WebViewActivity.this).insertValues(FavouriteCachedEntry.TABLE_NAME, values);
+                FavouritesDBAdapter.getInstance().saveNewsItem(mNewsItem, value);
             });
             t.start();
         });
@@ -85,16 +85,11 @@ public class WebViewActivity extends AppCompatActivity {
 
     private void deleteWebPageFromCache() {
         Thread t = new Thread(() -> {
-            String whereClause = FavouriteCachedEntry.COLUMN_NAME_ARTICLE_ID + " = " + mNewsItem.id;
+            FavouritesDBAdapter dbAdapter = FavouritesDBAdapter.getInstance();
+            String filePath = dbAdapter.getCachedNewsItemPath(mNewsItem.id);
 
-            DBProvider dbProvider = DBProvider.getInstance(WebViewActivity.this);
-            String filePath = dbProvider.DBLookup(FavouriteCachedEntry.TABLE_NAME, FavouriteCachedEntry.COLUMN_NAME_PATH, whereClause);
-            if (filePath == null) return;
-            File f = new File(filePath);
-            if (!Environment.getExternalStorageState(f).equals(Environment.MEDIA_MOUNTED)) return;
-            if (f.exists())
-                f.delete();
-            dbProvider.deleteValues(FavouriteCachedEntry.TABLE_NAME, whereClause);
+            CacheStorageAdapter.deleteFile(filePath);
+            dbAdapter.deleteNewsItem(mNewsItem.id);
         });
         t.start();
     }
@@ -102,9 +97,7 @@ public class WebViewActivity extends AppCompatActivity {
     private void setPageCached() {
         Thread t = new Thread(() -> {
             boolean result = false;
-            String whereClause = FavouriteCachedEntry.COLUMN_NAME_ARTICLE_ID + " = " + mNewsItem.id;
-            DBProvider dbProvider = DBProvider.getInstance(WebViewActivity.this);
-            String filePath = dbProvider.DBLookup(FavouriteCachedEntry.TABLE_NAME, FavouriteCachedEntry.COLUMN_NAME_PATH, whereClause);
+            String filePath = FavouritesDBAdapter.getInstance().getCachedNewsItemPath(mNewsItem.id);
             if (filePath != null) {
                 File f = new File(filePath);
                 if (Environment.getExternalStorageState(f).equals(Environment.MEDIA_MOUNTED))
@@ -117,6 +110,8 @@ public class WebViewActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        if (mIsCachedItem)
+            return true;
         getMenuInflater().inflate(R.menu.menu_web_view, menu);
         MenuItem menuItem = menu.getItem(0);
         updateFavouriteMenuIcon(menuItem);
@@ -125,7 +120,8 @@ public class WebViewActivity extends AppCompatActivity {
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        updateFavouriteMenuIcon(menu.getItem(0));
+        if (!mIsCachedItem)
+            updateFavouriteMenuIcon(menu.getItem(0));
         return true;
     }
 
