@@ -6,6 +6,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -22,6 +24,7 @@ public class NewsItemRecyclerViewAdapter extends RecyclerView.Adapter<NewsItemRe
 
     protected final List<NewsItem> mValues;
     protected final OnListFragmentInteractionListener mListener;
+    protected int mLastPosition = -1;
 
     public NewsItemRecyclerViewAdapter(List<NewsItem> items, OnListFragmentInteractionListener listener) {
         mValues = items;
@@ -42,6 +45,17 @@ public class NewsItemRecyclerViewAdapter extends RecyclerView.Adapter<NewsItemRe
         holder.mDescView.setText(holder.mItem.shortDescription);
         holder.mProgressBar.setVisibility(View.VISIBLE);
 
+        holder.mView.setOnClickListener( (View v) -> {
+            if (mListener != null) {
+                v.startAnimation(AnimationUtils.loadAnimation(v.getContext(), R.anim.anim_list_click));
+                mListener.onListFragmentInteraction(holder.mItem);
+            }
+        });
+
+        Animation animation = AnimationUtils.loadAnimation(holder.mImageView.getContext(), (position > mLastPosition) ? R.anim.anim_list_view_down_to_up : R.anim.anim_list_view_up_to_down);
+        holder.mView.startAnimation(animation);
+        mLastPosition = position;
+
        // можно использовать либо Picasso, либо загрузчик на AsyncTask
 //        Picasso.get().load(holder.mItem.imgUrl).placeholder(R.drawable.user_placeholder).error(R.drawable.user_placeholder_error).into(holder.mImageView, new com.squareup.picasso.Callback() {
 //            @Override
@@ -54,13 +68,7 @@ public class NewsItemRecyclerViewAdapter extends RecyclerView.Adapter<NewsItemRe
 //                holder.mProgressBar.setVisibility(View.GONE);
 //            }
 //        });
-
-        new AsyncImageDownloader(holder.mImageView.getContext(), holder.mCallback).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, holder.mItem.imgUrl);
-        holder.mView.setOnClickListener( (View v) -> {
-            if (mListener != null) {
-                mListener.onListFragmentInteraction(holder.mItem);
-            }
-        });
+        doAsyncDownloadImage(holder);
     }
 
     @Override
@@ -97,6 +105,10 @@ public class NewsItemRecyclerViewAdapter extends RecyclerView.Adapter<NewsItemRe
         public String toString() {
             return super.toString() + " '" + mTitleView.getText() + "'";
         }
+    }
+
+    protected void doAsyncDownloadImage(ViewHolder holder) {
+        new AsyncImageDownloader(holder.mImageView.getContext(), holder.mCallback).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, holder.mItem.imgUrl);
     }
 
     public interface OnImageDownloadCompleteListener {
