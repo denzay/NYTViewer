@@ -7,7 +7,11 @@ import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.webkit.WebChromeClient;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.widget.ProgressBar;
 
 import com.gmail.dp.denzay.nytviewer.R;
 import com.gmail.dp.denzay.nytviewer.adapters.CacheStorageAdapter;
@@ -24,6 +28,7 @@ public class WebViewActivity extends AppCompatActivity {
     private static final String KEY_IS_FAVOURITE = "IS_FAVOURITE";
 
     private WebView mWebView;
+    private ProgressBar mProgressBar;
     private AtomicBoolean mIsFavourite = new AtomicBoolean(false);
     private NewsItem mNewsItem;
     private Handler mHandler;
@@ -34,6 +39,21 @@ public class WebViewActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_web_view);
         mWebView = findViewById(R.id.wb_WebView);
+        mProgressBar = findViewById(R.id.pb_WebView);
+
+        WebSettings settings = mWebView.getSettings();
+        settings.setJavaScriptEnabled(true);
+        mWebView.setScrollBarStyle(WebView.SCROLLBARS_OUTSIDE_OVERLAY);
+
+        mWebView.setWebChromeClient(new WebChromeClient(){
+            @Override
+            public void onProgressChanged(WebView view, int newProgress) {
+                mProgressBar.setProgress(newProgress);
+                if(newProgress == 100){
+                    mProgressBar.setVisibility(View.GONE);
+                }
+            }
+        });
 
         Bundle arguments = getIntent().getExtras();
         mNewsItem = arguments.getParcelable(KEY_NEWS_ITEM);

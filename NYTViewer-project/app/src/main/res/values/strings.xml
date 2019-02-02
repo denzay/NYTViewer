@@ -8,4 +8,5 @@
     <string name="action_favourites">Favourites</string>
     <string name="delete_dialog_title">Confirm delete&#8230;</string>
     <string name="confirm_delete">Are you sure to delete?</string>
+    <string name="hint_to_delete">Swipe to delete saved item</string>
 </resources>
