@@ -4,6 +4,7 @@ package com.gmail.dp.denzay.nytviewer.views;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -15,6 +16,7 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.gmail.dp.denzay.nytviewer.R;
 import com.gmail.dp.denzay.nytviewer.adapters.CacheStorageAdapter;
@@ -30,6 +32,7 @@ public class FavouritesFragment extends Fragment {
 
     private static final int MSG_LOAD_COMPLETE = 1;
     private static final int MSG_DELETE_COMPLETE = 2;
+    private static final String TAG_IS_SHOW_HINT = "IS_SHOW_HINT";
 
     private NewsItemFavouritesRecyclerViewAdapter mAdapter;
     private OnListFragmentInteractionListener mListener;
@@ -67,6 +70,7 @@ public class FavouritesFragment extends Fragment {
         });
 
         LoadNewsContentFromDB();
+        showHint();
         return rootView;
     }
 
@@ -139,4 +143,13 @@ public class FavouritesFragment extends Fragment {
         t.start();
     }
 
+    private void showHint() {
+        // Отображаем подсказку один раз за время работы приложения
+        SharedPreferences prefs = getActivity().getPreferences(Context.MODE_PRIVATE);
+        if(prefs == null) return;
+        boolean isShowHint = prefs.getBoolean(TAG_IS_SHOW_HINT, true);
+        if (!isShowHint) return;
+        Toast.makeText(getContext(), R.string.hint_to_delete, Toast.LENGTH_LONG).show();
+        prefs.edit().putBoolean(TAG_IS_SHOW_HINT, false).apply();
+    }
 }
