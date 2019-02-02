@@ -45,6 +45,7 @@ public class NewsItem implements Parcelable {
         // Вызывает краш приложения, без сообщения об ошибке
         // dest.writeParcelable(this.mBitmap, flags);
 
+        if (mBitmap == null) return;;
         // Передаём картинку через массив, это работает
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         mBitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
@@ -61,6 +62,7 @@ public class NewsItem implements Parcelable {
         this.shortDescription = in.readString();
         this.imgUrl = in.readString();
         int size = in.readInt();
+        if (size == 0) return;
         byte[] picArray = new byte[size];
         in.readByteArray(picArray);
         this.mBitmap = BitmapFactory.decodeByteArray(picArray, 0, size);
