@@ -1,6 +1,5 @@
 package com.gmail.dp.denzay.nytviewer.views;
 
-
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -9,9 +8,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
@@ -30,34 +26,17 @@ import com.gmail.dp.denzay.nytviewer.models.NewsItem;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FavouritesFragment extends Fragment {
+public class FavouritesFragment extends NewsListFragment {
 
     private static final int MSG_LOAD_COMPLETE = 1;
     private static final int MSG_DELETE_COMPLETE = 2;
     private static final String TAG_IS_SHOW_HINT = "IS_SHOW_HINT";
-    private static final String KEY_DATA_LIST = "DB_DATA_LIST";
+    private static final String KEY_DB_DATA_LIST = "DB_DATA_LIST";
 
     private NewsItemFavouritesRecyclerViewAdapter mAdapter;
-    private OnListFragmentInteractionListener mListener;
     private Handler mHandler;
-    private NewsContent mNewsContent = new NewsContent();
-    private RetainedDataFragment mRetainedDataFragment;
 
     public FavouritesFragment(){
-    }
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        FragmentManager fm = getFragmentManager();
-        mRetainedDataFragment = (RetainedDataFragment) fm.findFragmentByTag(KEY_DATA_LIST);
-
-        // create the fragment and data the first time
-        if (mRetainedDataFragment == null) {
-            mRetainedDataFragment = new RetainedDataFragment();
-            fm.beginTransaction().add(mRetainedDataFragment, KEY_DATA_LIST).commit();
-        }
     }
 
     @Override
@@ -143,22 +122,6 @@ public class FavouritesFragment extends Fragment {
         }
     });
 
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnListFragmentInteractionListener) {
-            mListener = (OnListFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString() + " must implement OnListFragmentInteractionListener");
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
-    }
-
     private void LoadNewsContentFromDB() {
         Thread t = new Thread(() -> {
            List<NewsItem> newsItemList = new ArrayList<>();
@@ -181,8 +144,8 @@ public class FavouritesFragment extends Fragment {
     }
 
     @Override
-    public void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
-        mRetainedDataFragment.setNewsContent(mNewsContent);
+    protected String getRetainedDataFragmentTag() {
+        return KEY_DB_DATA_LIST;
     }
+
 }

@@ -44,12 +44,13 @@ public class NewsListFragment extends Fragment {
     private static final String KEY_DATA_LIST = "DATA_LIST";
 
     private NewsFragmentType mFragmentType;
-    private OnListFragmentInteractionListener mListener;
-    private NewsItemRecyclerViewAdapter mNewsItemRecyclerViewAdapter;
-    private NewsContent mNewsContent;
-    private SwipeRefreshLayout mSwipeRefreshLayout;
-    private RetainedDataFragment mRetainedDataFragment;
 
+    private NewsItemRecyclerViewAdapter mNewsItemRecyclerViewAdapter;
+    private SwipeRefreshLayout mSwipeRefreshLayout;
+
+    protected OnListFragmentInteractionListener mListener;
+    protected NewsContent mNewsContent;
+    protected RetainedDataFragment mRetainedDataFragment;
 
     public NewsListFragment() {
     }
@@ -71,12 +72,12 @@ public class NewsListFragment extends Fragment {
         }
 
         FragmentManager fm = getFragmentManager();
-        mRetainedDataFragment = (RetainedDataFragment) fm.findFragmentByTag(KEY_DATA_LIST);
+        mRetainedDataFragment = (RetainedDataFragment) fm.findFragmentByTag(getRetainedDataFragmentTag());
 
         // create the fragment and data the first time
         if (mRetainedDataFragment == null) {
             mRetainedDataFragment = new RetainedDataFragment();
-            fm.beginTransaction().add(mRetainedDataFragment, KEY_DATA_LIST).commit();
+            fm.beginTransaction().add(mRetainedDataFragment, getRetainedDataFragmentTag()).commit();
         }
     }
 
@@ -211,5 +212,10 @@ public class NewsListFragment extends Fragment {
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         mRetainedDataFragment.setNewsContent(mNewsContent);
+    }
+
+    // Метод для отдельного сохранения фрагментов с online-данными и кешированными
+    protected String getRetainedDataFragmentTag() {
+        return KEY_DATA_LIST;
     }
 }
