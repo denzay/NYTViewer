@@ -9,7 +9,9 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
@@ -33,13 +35,29 @@ public class FavouritesFragment extends Fragment {
     private static final int MSG_LOAD_COMPLETE = 1;
     private static final int MSG_DELETE_COMPLETE = 2;
     private static final String TAG_IS_SHOW_HINT = "IS_SHOW_HINT";
+    private static final String KEY_DATA_LIST = "DB_DATA_LIST";
 
     private NewsItemFavouritesRecyclerViewAdapter mAdapter;
     private OnListFragmentInteractionListener mListener;
     private Handler mHandler;
     private NewsContent mNewsContent = new NewsContent();
+    private RetainedDataFragment mRetainedDataFragment;
 
     public FavouritesFragment(){
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        FragmentManager fm = getFragmentManager();
+        mRetainedDataFragment = (RetainedDataFragment) fm.findFragmentByTag(KEY_DATA_LIST);
+
+        // create the fragment and data the first time
+        if (mRetainedDataFragment == null) {
+            mRetainedDataFragment = new RetainedDataFragment();
+            fm.beginTransaction().add(mRetainedDataFragment, KEY_DATA_LIST).commit();
+        }
     }
 
     @Override
@@ -47,7 +65,14 @@ public class FavouritesFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_newsitem_list_favourites, container, false);
         getActivity().setTitle(R.string.action_favourites);
 
-        mAdapter = new NewsItemFavouritesRecyclerViewAdapter(mNewsContent.getItems(), mListener);
+        if (savedInstanceState == null)
+            mNewsContent = new NewsContent();
+        else {
+            mNewsContent = mRetainedDataFragment.getNewsContent();
+        }
+
+        mAdapter = new NewsItemFavouritesRecyclerViewAdapter(mNewsContent, mListener);
+
         if (rootView instanceof RecyclerView) {
             RecyclerView recyclerView = ((RecyclerView) rootView);
             recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 1));
@@ -69,8 +94,10 @@ public class FavouritesFragment extends Fragment {
             return true;
         });
 
-        LoadNewsContentFromDB();
-        showHint();
+        if (savedInstanceState == null) {
+            LoadNewsContentFromDB();
+            showHint();
+        }
         return rootView;
     }
 
@@ -151,5 +178,11 @@ public class FavouritesFragment extends Fragment {
         if (!isShowHint) return;
         Toast.makeText(getContext(), R.string.hint_to_delete, Toast.LENGTH_LONG).show();
         prefs.edit().putBoolean(TAG_IS_SHOW_HINT, false).apply();
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        mRetainedDataFragment.setNewsContent(mNewsContent);
     }
 }

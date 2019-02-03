@@ -2,8 +2,10 @@ package com.gmail.dp.denzay.nytviewer.views;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 
+import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -39,11 +41,15 @@ public class NewsListFragment extends Fragment {
     public enum NewsFragmentType {nftEmailed, nftShared, nftViewed};
 
     private static final String ARG_NEWS_FRAGMENT_TYPE = "NEWS_FRAGMENT_TYPE";
+    private static final String KEY_DATA_LIST = "DATA_LIST";
+
     private NewsFragmentType mFragmentType;
     private OnListFragmentInteractionListener mListener;
     private NewsItemRecyclerViewAdapter mNewsItemRecyclerViewAdapter;
-    private NewsContent mNewsContent = new NewsContent();
+    private NewsContent mNewsContent;
     private SwipeRefreshLayout mSwipeRefreshLayout;
+    private RetainedDataFragment mRetainedDataFragment;
+
 
     public NewsListFragment() {
     }
@@ -63,6 +69,15 @@ public class NewsListFragment extends Fragment {
         if (getArguments() != null) {
             mFragmentType = NewsFragmentType.values()[getArguments().getInt(ARG_NEWS_FRAGMENT_TYPE)];
         }
+
+        FragmentManager fm = getFragmentManager();
+        mRetainedDataFragment = (RetainedDataFragment) fm.findFragmentByTag(KEY_DATA_LIST);
+
+        // create the fragment and data the first time
+        if (mRetainedDataFragment == null) {
+            mRetainedDataFragment = new RetainedDataFragment();
+            fm.beginTransaction().add(mRetainedDataFragment, KEY_DATA_LIST).commit();
+        }
     }
 
     @Override
@@ -73,16 +88,22 @@ public class NewsListFragment extends Fragment {
         mSwipeRefreshLayout.setOnRefreshListener(() -> doLoadNews(mFragmentType));
         mSwipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary);
 
-        View view = (RecyclerView) rootView.findViewById(R.id.list);
-        // Set the adapter
-        if (view instanceof RecyclerView) {
-            Context context = view.getContext();
-            RecyclerView recyclerView = (RecyclerView) view;
-            recyclerView.setLayoutManager(new LinearLayoutManager(context));
-            doLoadNews(mFragmentType);
-            mNewsItemRecyclerViewAdapter = new NewsItemRecyclerViewAdapter(mNewsContent.getItems(), mListener);
-            recyclerView.setAdapter(mNewsItemRecyclerViewAdapter);
+        RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.list);
+        Context context = recyclerView.getContext();
+        recyclerView.setLayoutManager(new LinearLayoutManager(context));
+
+        if (savedInstanceState == null)
+            mNewsContent = new NewsContent();
+        else {
+            mNewsContent = mRetainedDataFragment.getNewsContent();
         }
+
+        mNewsItemRecyclerViewAdapter = new NewsItemRecyclerViewAdapter(mNewsContent, mListener);
+        recyclerView.setAdapter(mNewsItemRecyclerViewAdapter);
+
+        if (savedInstanceState == null)
+            doLoadNews(mFragmentType);
+
         return rootView;
     }
 
@@ -184,5 +205,11 @@ public class NewsListFragment extends Fragment {
     private void processFailResponse(Throwable t) {
         mSwipeRefreshLayout.setRefreshing(false);
         Toast.makeText(getActivity(), t.getMessage(), Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        mRetainedDataFragment.setNewsContent(mNewsContent);
     }
 }
