@@ -110,6 +110,7 @@ public class WebViewActivity extends AppCompatActivity {
         String fileName = CacheStorageAdapter.getExternalFolderPath(this);
 
         mWebView.saveWebArchive(fileName, true, (String value) -> {
+            if (value == null) return; // ошибка сохранения веб архива (операция прервана)
             Thread t = new Thread(() -> {
                 FavouritesDBAdapter.getInstance().saveNewsItem(mNewsItem, value);
             });
