@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -33,6 +34,7 @@ public class WebViewActivity extends AppCompatActivity {
     private NewsItem mNewsItem;
     private Handler mHandler;
     private boolean mIsCachedItem;
+    private boolean mIsPageDownloaded = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +52,7 @@ public class WebViewActivity extends AppCompatActivity {
             public void onProgressChanged(WebView view, int newProgress) {
                 mProgressBar.setProgress(newProgress);
                 if(newProgress == 100){
+                    mIsPageDownloaded = true;
                     mProgressBar.setVisibility(View.GONE);
                 }
             }
@@ -93,6 +96,17 @@ public class WebViewActivity extends AppCompatActivity {
     }
 
     private void saveWebPageToCache() {
+        if (!mIsPageDownloaded) {
+            Snackbar.make(mWebView, R.string.warning_save_page, Snackbar.LENGTH_SHORT)
+                    .setAction(R.string.warning_got_it, (View v) -> {
+                    })
+                    .show();
+
+            mIsFavourite.set(false);
+            invalidateOptionsMenu();
+            return;
+        }
+
         String fileName = CacheStorageAdapter.getExternalFolderPath(this);
 
         mWebView.saveWebArchive(fileName, true, (String value) -> {
