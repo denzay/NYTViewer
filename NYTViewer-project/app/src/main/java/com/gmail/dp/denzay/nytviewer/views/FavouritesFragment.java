@@ -1,6 +1,5 @@
 package com.gmail.dp.denzay.nytviewer.views;
 
-
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -9,7 +8,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
-import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
@@ -28,16 +26,15 @@ import com.gmail.dp.denzay.nytviewer.models.NewsItem;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FavouritesFragment extends Fragment {
+public class FavouritesFragment extends NewsListFragment {
 
     private static final int MSG_LOAD_COMPLETE = 1;
     private static final int MSG_DELETE_COMPLETE = 2;
     private static final String TAG_IS_SHOW_HINT = "IS_SHOW_HINT";
+    private static final String KEY_DB_DATA_LIST = "DB_DATA_LIST";
 
     private NewsItemFavouritesRecyclerViewAdapter mAdapter;
-    private OnListFragmentInteractionListener mListener;
     private Handler mHandler;
-    private NewsContent mNewsContent = new NewsContent();
 
     public FavouritesFragment(){
     }
@@ -47,7 +44,14 @@ public class FavouritesFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_newsitem_list_favourites, container, false);
         getActivity().setTitle(R.string.action_favourites);
 
-        mAdapter = new NewsItemFavouritesRecyclerViewAdapter(mNewsContent.getItems(), mListener);
+        if (savedInstanceState == null)
+            mNewsContent = new NewsContent();
+        else {
+            mNewsContent = mRetainedDataFragment.getNewsContent();
+        }
+
+        mAdapter = new NewsItemFavouritesRecyclerViewAdapter(mNewsContent, mListener);
+
         if (rootView instanceof RecyclerView) {
             RecyclerView recyclerView = ((RecyclerView) rootView);
             recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 1));
@@ -69,8 +73,10 @@ public class FavouritesFragment extends Fragment {
             return true;
         });
 
-        LoadNewsContentFromDB();
-        showHint();
+        if (savedInstanceState == null) {
+            LoadNewsContentFromDB();
+            showHint();
+        }
         return rootView;
     }
 
@@ -116,22 +122,6 @@ public class FavouritesFragment extends Fragment {
         }
     });
 
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnListFragmentInteractionListener) {
-            mListener = (OnListFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString() + " must implement OnListFragmentInteractionListener");
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
-    }
-
     private void LoadNewsContentFromDB() {
         Thread t = new Thread(() -> {
            List<NewsItem> newsItemList = new ArrayList<>();
@@ -152,4 +142,10 @@ public class FavouritesFragment extends Fragment {
         Toast.makeText(getContext(), R.string.hint_to_delete, Toast.LENGTH_LONG).show();
         prefs.edit().putBoolean(TAG_IS_SHOW_HINT, false).apply();
     }
+
+    @Override
+    protected String getRetainedDataFragmentTag() {
+        return KEY_DB_DATA_LIST;
+    }
+
 }

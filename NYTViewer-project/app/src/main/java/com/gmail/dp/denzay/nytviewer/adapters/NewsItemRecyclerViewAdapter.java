@@ -14,21 +14,19 @@ import android.widget.TextView;
 
 import com.gmail.dp.denzay.nytviewer.AsyncImageDownloader;
 import com.gmail.dp.denzay.nytviewer.R;
+import com.gmail.dp.denzay.nytviewer.models.NewsContent;
 import com.gmail.dp.denzay.nytviewer.views.OnListFragmentInteractionListener;
 import com.gmail.dp.denzay.nytviewer.models.NewsItem;
 
-
-import java.util.List;
-
 public class NewsItemRecyclerViewAdapter extends RecyclerView.Adapter<NewsItemRecyclerViewAdapter.ViewHolder> {
 
-    protected final List<NewsItem> mValues;
+    protected final NewsContent mData;
     protected final OnListFragmentInteractionListener mListener;
     protected int mLastPosition = -1;
 
-    public NewsItemRecyclerViewAdapter(List<NewsItem> items, OnListFragmentInteractionListener listener) {
-        mValues = items;
-        mListener = listener;
+    public NewsItemRecyclerViewAdapter(NewsContent aNewsContent, OnListFragmentInteractionListener aListener) {
+        mData = aNewsContent;
+        mListener = aListener;
     }
 
     @Override
@@ -40,7 +38,7 @@ public class NewsItemRecyclerViewAdapter extends RecyclerView.Adapter<NewsItemRe
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
-        holder.mItem = mValues.get(position);
+        holder.mItem = mData.getItems().get(position);
         holder.mTitleView.setText(holder.mItem.title);
         holder.mDescView.setText(holder.mItem.shortDescription);
         holder.mProgressBar.setVisibility(View.VISIBLE);
@@ -73,7 +71,7 @@ public class NewsItemRecyclerViewAdapter extends RecyclerView.Adapter<NewsItemRe
 
     @Override
     public int getItemCount() {
-        return mValues.size();
+        return mData.getItems().size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
