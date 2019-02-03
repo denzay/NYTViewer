@@ -45,8 +45,11 @@ public class NewsItemRecyclerViewAdapter extends RecyclerView.Adapter<NewsItemRe
 
         holder.mView.setOnClickListener( (View v) -> {
             if (mListener != null) {
-                v.startAnimation(AnimationUtils.loadAnimation(v.getContext(), R.anim.anim_list_click));
-                mListener.onListFragmentInteraction(holder.mItem);
+                // пока айтем с картинкой не загрузился - игнорируем клик, ожидая формирования до конца модели NewsItem
+                if (holder.mImageView.getDrawable() != null) {
+                    v.startAnimation(AnimationUtils.loadAnimation(v.getContext(), R.anim.anim_list_click));
+                    mListener.onListFragmentInteraction(holder.mItem);
+                }
             }
         });
 
