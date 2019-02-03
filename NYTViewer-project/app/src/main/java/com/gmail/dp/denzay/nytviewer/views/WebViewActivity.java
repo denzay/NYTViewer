@@ -15,7 +15,7 @@ import android.webkit.WebView;
 import android.widget.ProgressBar;
 
 import com.gmail.dp.denzay.nytviewer.R;
-import com.gmail.dp.denzay.nytviewer.adapters.CacheStorageAdapter;
+import com.gmail.dp.denzay.nytviewer.utils.CacheStorageUtils;
 import com.gmail.dp.denzay.nytviewer.adapters.FavouritesDBAdapter;
 import com.gmail.dp.denzay.nytviewer.models.NewsItem;
 
@@ -107,7 +107,7 @@ public class WebViewActivity extends AppCompatActivity {
             return;
         }
 
-        String fileName = CacheStorageAdapter.getExternalFolderPath(this);
+        String fileName = CacheStorageUtils.getExternalFolderPath(this);
 
         mWebView.saveWebArchive(fileName, true, (String value) -> {
             if (value == null) return; // ошибка сохранения веб архива (операция прервана)
@@ -123,7 +123,7 @@ public class WebViewActivity extends AppCompatActivity {
             FavouritesDBAdapter dbAdapter = FavouritesDBAdapter.getInstance();
             String filePath = dbAdapter.getCachedNewsItemPath(mNewsItem.id);
 
-            CacheStorageAdapter.deleteFile(filePath);
+            CacheStorageUtils.deleteFile(filePath);
             dbAdapter.deleteNewsItem(mNewsItem.id);
         });
         t.start();

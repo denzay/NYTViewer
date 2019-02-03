@@ -57,13 +57,10 @@ public final class DBProvider {
             sql += " WHERE " + aWhere;
         sql += " LIMIT 1";
 
-        Cursor cursor = getSQL(sql);
-        try {
+        try (Cursor cursor = getSQL(sql)){
             if (cursor.moveToNext()) {
                 result = cursor.getString(0);
             }
-        } finally {
-            cursor.close();
         }
         return result;
     }
@@ -76,30 +73,31 @@ public final class DBProvider {
             sql += " WHERE " + aWhere;
         sql += " LIMIT 1";
 
-        Cursor cursor = getSQL(sql);
-        try {
+        try (Cursor cursor = getSQL(sql)) {
             if (cursor.moveToNext()) {
                 result = cursor.getBlob(0);
             }
-        } finally {
-            cursor.close();
         }
         return result;
     }
 
-    public boolean DBExists(@NonNull String aTableName, @NonNull String aColumn, @NonNull String aWhere) {
-        return DBLookup(aTableName, aColumn, aWhere) != null;
+    public boolean DBExists(@NonNull String aTableName, @NonNull String aWhere) {
+        String sql = "SELECT 1 FROM " + aTableName;
+        if (aWhere != "")
+            sql += " WHERE " + aWhere;
+        sql += " LIMIT 1";
+
+        try(Cursor cursor = getSQL(sql)) {
+            return cursor.moveToNext();
+        }
     }
 
     public void insertValues(@NonNull String aTableName, ContentValues aValues) {
         mDB.insert(aTableName, null, aValues);
     }
 
-    public void updateValues(@NonNull String aTableName, @NonNull String aNewValues, @NonNull String aWhere) {
-        String sql = "UPDATE " + aTableName + " SET " + aNewValues;
-        if (aWhere != "")
-            sql += " WHERE " + aWhere;
-        execSQL(sql);
+    public void updateValues(@NonNull String aTableName, ContentValues aValues, String aWhere) {
+        mDB.update(aTableName, aValues, aWhere, null);
     }
 
     public void deleteValues(@NonNull String aTableName, @NonNull String aWhere) {

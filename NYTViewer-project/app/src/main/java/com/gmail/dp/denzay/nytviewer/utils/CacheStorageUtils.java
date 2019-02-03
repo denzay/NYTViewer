@@ -1,11 +1,11 @@
-package com.gmail.dp.denzay.nytviewer.adapters;
+package com.gmail.dp.denzay.nytviewer.utils;
 
 import android.content.Context;
 import android.os.Environment;
 
 import java.io.File;
 
-public class CacheStorageAdapter {
+public class CacheStorageUtils {
 
     public static String getExternalFolderPath(Context aContext) {
         return aContext.getExternalFilesDir(null).getAbsolutePath() + "/";

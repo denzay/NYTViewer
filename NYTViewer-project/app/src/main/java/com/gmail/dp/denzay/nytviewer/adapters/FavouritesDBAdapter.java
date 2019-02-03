@@ -9,6 +9,7 @@ import android.support.annotation.Nullable;
 
 import com.gmail.dp.denzay.nytviewer.data.DBProvider;
 import com.gmail.dp.denzay.nytviewer.data.FavouriteCachedContract;
+import com.gmail.dp.denzay.nytviewer.data.FavouriteCachedContract.FavouriteCachedEntry;
 import com.gmail.dp.denzay.nytviewer.models.NewsItem;
 
 import java.io.ByteArrayInputStream;
@@ -25,9 +26,6 @@ public class FavouritesDBAdapter {
         if (mInstance == null)
             mInstance = new FavouritesDBAdapter();
         return mInstance;
-    }
-
-    private FavouritesDBAdapter() {
     }
 
     public synchronized void connect(Context aContext) {
@@ -47,16 +45,21 @@ public class FavouritesDBAdapter {
 
     public void saveNewsItem(NewsItem aNewsItem, String aFilePath) {
         ContentValues values = new ContentValues();
-        values.put(FavouriteCachedContract.FavouriteCachedEntry.COLUMN_NAME_ARTICLE_ID, aNewsItem.id);
-        values.put(FavouriteCachedContract.FavouriteCachedEntry.COLUMN_NAME_TITLE, aNewsItem.title);
-        values.put(FavouriteCachedContract.FavouriteCachedEntry.COLUMN_NAME_DESCRIPTION, aNewsItem.shortDescription);
-        values.put(FavouriteCachedContract.FavouriteCachedEntry.COLUMN_NAME_PATH, aFilePath);
+        values.put(FavouriteCachedEntry.COLUMN_NAME_ARTICLE_ID, aNewsItem.id);
+        values.put(FavouriteCachedEntry.COLUMN_NAME_TITLE, aNewsItem.title);
+        values.put(FavouriteCachedEntry.COLUMN_NAME_DESCRIPTION, aNewsItem.shortDescription);
+        values.put(FavouriteCachedEntry.COLUMN_NAME_PATH, aFilePath);
 
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         aNewsItem.getBitmap().compress(Bitmap.CompressFormat.PNG, 100, stream);
         byte[] byteArray = stream.toByteArray();
         values.put(FavouriteCachedContract.FavouriteCachedEntry.COLUMN_NAME_PICTURE, byteArray);
-        mDBProvider.insertValues(FavouriteCachedContract.FavouriteCachedEntry.TABLE_NAME, values);
+
+        String whereClause = FavouriteCachedEntry.COLUMN_NAME_ARTICLE_ID + " = " + aNewsItem.id;
+        if (mDBProvider.DBExists(FavouriteCachedEntry.TABLE_NAME, whereClause))
+            mDBProvider.updateValues(FavouriteCachedEntry.TABLE_NAME, values, whereClause);
+        else
+            mDBProvider.insertValues(FavouriteCachedEntry.TABLE_NAME, values);
     }
 
     public void deleteNewsItem(long aNewsItemId) {
@@ -85,8 +88,7 @@ public class FavouritesDBAdapter {
     }
 
     public void loadNewsItems(List<NewsItem> aNewsItemsList) {
-        Cursor cursor = mDBProvider.getSQL("SELECT * FROM " + FavouriteCachedContract.FavouriteCachedEntry.TABLE_NAME);
-        try {
+        try (Cursor cursor = mDBProvider.getSQL("SELECT * FROM " + FavouriteCachedContract.FavouriteCachedEntry.TABLE_NAME)) {
             while (cursor.moveToNext()) {
                 long id = DBProvider.getLongValue(cursor, FavouriteCachedContract.FavouriteCachedEntry.COLUMN_NAME_ARTICLE_ID);
                 String title = DBProvider.geStringValue(cursor, FavouriteCachedContract.FavouriteCachedEntry.COLUMN_NAME_TITLE);
@@ -95,8 +97,6 @@ public class FavouritesDBAdapter {
                 NewsItem item = new NewsItem(id, path, title, description, null);
                 aNewsItemsList.add(item);
             }
-        } finally {
-            cursor.close();
         }
     }
 

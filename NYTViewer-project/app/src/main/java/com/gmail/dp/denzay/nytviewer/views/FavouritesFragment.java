@@ -17,7 +17,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.gmail.dp.denzay.nytviewer.R;
-import com.gmail.dp.denzay.nytviewer.adapters.CacheStorageAdapter;
+import com.gmail.dp.denzay.nytviewer.utils.CacheStorageUtils;
 import com.gmail.dp.denzay.nytviewer.adapters.FavouritesDBAdapter;
 import com.gmail.dp.denzay.nytviewer.adapters.NewsItemFavouritesRecyclerViewAdapter;
 import com.gmail.dp.denzay.nytviewer.models.NewsContent;
@@ -108,7 +108,7 @@ public class FavouritesFragment extends NewsListFragment {
                     FavouritesDBAdapter dbAdapter = FavouritesDBAdapter.getInstance();
                     String filePath = dbAdapter.getCachedNewsItemPath(newsItem.id);
 
-                    CacheStorageAdapter.deleteFile(filePath);
+                    CacheStorageUtils.deleteFile(filePath);
                     dbAdapter.deleteNewsItem(newsItem.id);
 
                     Message msg = new Message();
