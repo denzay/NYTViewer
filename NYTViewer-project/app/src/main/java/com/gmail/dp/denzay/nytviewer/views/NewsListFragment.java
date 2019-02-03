@@ -4,7 +4,6 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
-
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
@@ -18,6 +17,7 @@ import com.gmail.dp.denzay.nytviewer.R;
 import com.gmail.dp.denzay.nytviewer.adapters.NYTAPI;
 import com.gmail.dp.denzay.nytviewer.adapters.NYTRequestAdapter;
 import com.gmail.dp.denzay.nytviewer.adapters.NewsItemRecyclerViewAdapter;
+import com.gmail.dp.denzay.nytviewer.models.APIError;
 import com.gmail.dp.denzay.nytviewer.models.AbstractResponse;
 import com.gmail.dp.denzay.nytviewer.models.AbstractResponseResult;
 import com.gmail.dp.denzay.nytviewer.models.EmailedResponse;
@@ -74,7 +74,6 @@ public class NewsListFragment extends Fragment {
         FragmentManager fm = getFragmentManager();
         mRetainedDataFragment = (RetainedDataFragment) fm.findFragmentByTag(getRetainedDataFragmentTag());
 
-        // create the fragment and data the first time
         if (mRetainedDataFragment == null) {
             mRetainedDataFragment = new RetainedDataFragment();
             fm.beginTransaction().add(mRetainedDataFragment, getRetainedDataFragmentTag()).commit();
@@ -124,6 +123,18 @@ public class NewsListFragment extends Fragment {
         mListener = null;
     }
 
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        mRetainedDataFragment.setNewsContent(mNewsContent);
+    }
+
+    // Метод для отдельного сохранения фрагментов с online-данными и кешированными
+    protected String getRetainedDataFragmentTag() {
+        return KEY_DATA_LIST;
+    }
+
     private void doLoadNews(NewsFragmentType aNewsFragmentType) {
         mSwipeRefreshLayout.setRefreshing(true);
 
@@ -141,11 +152,11 @@ public class NewsListFragment extends Fragment {
         }
     }
 
+    //region request callbacks
     private Callback<EmailedResponse> emailedCallback = new Callback<EmailedResponse>() {
         @Override
         public void onResponse(Call<EmailedResponse> call, Response<EmailedResponse> response) {
-            AbstractResponse result = response.body();
-            processSuccessResponse(result);
+            processSuccessResponse(response);
         }
 
         @Override
@@ -157,8 +168,7 @@ public class NewsListFragment extends Fragment {
     private Callback<SharedResponse> sharedCallback = new Callback<SharedResponse>() {
         @Override
         public void onResponse(Call<SharedResponse> call, Response<SharedResponse> response) {
-            AbstractResponse result = response.body();
-            processSuccessResponse(result);
+            processSuccessResponse(response);
         }
 
         @Override
@@ -170,8 +180,7 @@ public class NewsListFragment extends Fragment {
     private Callback<ViewedResponse> viewedCallback = new Callback<ViewedResponse>() {
         @Override
         public void onResponse(Call<ViewedResponse> call, Response<ViewedResponse> response) {
-            AbstractResponse result = response.body();
-            processSuccessResponse(result);
+            processSuccessResponse(response);
         }
 
         @Override
@@ -179,28 +188,37 @@ public class NewsListFragment extends Fragment {
             processFailResponse(t);
         }
     };
+    //endregion
 
-    private void processSuccessResponse(AbstractResponse response) {
+    private void processSuccessResponse(Response<? extends AbstractResponse> aResponse) {
         mSwipeRefreshLayout.setRefreshing(false);
+        if (aResponse.isSuccessful()) {
+            AbstractResponse response = aResponse.body();
 
-        List<? extends AbstractResponseResult> listResults;
-        if (response instanceof EmailedResponse) {
-            listResults = ((EmailedResponse) response).getResults();
-        } else if (response instanceof SharedResponse) {
-            listResults = ((SharedResponse) response).getResults();
-        } else if (response instanceof ViewedResponse) {
-            listResults = ((ViewedResponse) response).getResults();
-        } else return;
+            List<? extends AbstractResponseResult> listResults;
+            if (response instanceof EmailedResponse) {
+                listResults = ((EmailedResponse) response).getResults();
+            } else if (response instanceof SharedResponse) {
+                listResults = ((SharedResponse) response).getResults();
+            } else if (response instanceof ViewedResponse) {
+                listResults = ((ViewedResponse) response).getResults();
+            } else return;
 
-
-        for (AbstractResponseResult item: listResults) {
-            String imageUrl = null;
-            MediaInfoItem.ImageInfoItem imageInfoItem = item.getLargeImageInfo();
-            if (imageInfoItem != null)
-                imageUrl = imageInfoItem.getUrl();
-            mNewsContent.addItem(new NewsItem(item.getId(), item.getUrl(), item.getTitle(), item.getShortDesc(), imageUrl));
+            for (AbstractResponseResult item : listResults) {
+                String imageUrl = null;
+                MediaInfoItem.ImageInfoItem imageInfoItem = item.getLargeImageInfo();
+                if (imageInfoItem != null)
+                    imageUrl = imageInfoItem.getUrl();
+                mNewsContent.addItem(new NewsItem(item.getId(), item.getUrl(), item.getTitle(), item.getShortDesc(), imageUrl));
+            }
+            mNewsItemRecyclerViewAdapter.notifyDataSetChanged();
+        } else {
+            String errorMsg = NYTRequestAdapter.processHTTPError(aResponse.code());
+            if (errorMsg == null) {
+                APIError error = NYTRequestAdapter.getInstance().parseError(aResponse);
+                processFailResponse(error);
+            } else Toast.makeText(getActivity(), errorMsg, Toast.LENGTH_LONG).show();
         }
-        mNewsItemRecyclerViewAdapter.notifyDataSetChanged();
     }
 
     private void processFailResponse(Throwable t) {
@@ -208,14 +226,10 @@ public class NewsListFragment extends Fragment {
         Toast.makeText(getActivity(), t.getMessage(), Toast.LENGTH_LONG).show();
     }
 
-    @Override
-    public void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
-        mRetainedDataFragment.setNewsContent(mNewsContent);
+    private void processFailResponse(APIError apiError) {
+        mSwipeRefreshLayout.setRefreshing(false);
+        String errorMsg = apiError.isRateLimitError() ? getResources().getString(R.string.api_error_rate_limit) : apiError.toString();
+        Toast.makeText(getActivity(), errorMsg, Toast.LENGTH_LONG).show();
     }
 
-    // Метод для отдельного сохранения фрагментов с online-данными и кешированными
-    protected String getRetainedDataFragmentTag() {
-        return KEY_DATA_LIST;
-    }
 }
