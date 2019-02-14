@@ -60,7 +60,7 @@ public abstract class AbstractResponseResult {
     public MediaInfoItem.ImageInfoItem getMediumImageInfo() {
         MediaInfoItem.ImageInfoItem result = null;
         if (media.size() > 0)
-            if(media.get(0).getMediaMetadata().size() >= 1) {
+            if(media.get(0).getMediaMetadata().size() >= 2) {
                 result = media.get(0).getMediaMetadata().get(1);
             }
         return result;
@@ -70,7 +70,7 @@ public abstract class AbstractResponseResult {
     public MediaInfoItem.ImageInfoItem getLargeImageInfo() {
         MediaInfoItem.ImageInfoItem result = null;
         if (media.size() > 0)
-            if(media.get(0).getMediaMetadata().size() >= 2) {
+            if(media.get(0).getMediaMetadata().size() >= 3) {
                 result = media.get(0).getMediaMetadata().get(2);
             }
         return result;

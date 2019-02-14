@@ -207,6 +207,10 @@ public class NewsListFragment extends Fragment {
             for (AbstractResponseResult item : listResults) {
                 String imageUrl = null;
                 MediaInfoItem.ImageInfoItem imageInfoItem = item.getLargeImageInfo();
+                if (imageInfoItem == null)
+                    imageInfoItem = item.getMediumImageInfo();
+                if (imageInfoItem == null)
+                    imageInfoItem = item.getSmallImageInfo();
                 if (imageInfoItem != null)
                     imageUrl = imageInfoItem.getUrl();
                 mNewsContent.addItem(new NewsItem(item.getId(), item.getUrl(), item.getTitle(), item.getShortDesc(), imageUrl));
