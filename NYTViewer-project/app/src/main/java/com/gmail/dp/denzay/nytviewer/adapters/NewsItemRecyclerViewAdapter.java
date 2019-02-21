@@ -18,7 +18,7 @@ import com.gmail.dp.denzay.nytviewer.models.NewsContent;
 import com.gmail.dp.denzay.nytviewer.models.NewsItem;
 import com.gmail.dp.denzay.nytviewer.views.OnListFragmentInteractionListener;
 
-public class NewsItemRecyclerViewAdapter extends RecyclerView.Adapter<NewsItemRecyclerViewAdapter.ViewHolder> {
+public class NewsItemRecyclerViewAdapter extends RecyclerView.Adapter<NewsItemRecyclerViewAdapter.ViewHolder> implements android.databinding.DataBindingComponent {
 
     protected final NewsContent mData;
     protected final OnListFragmentInteractionListener mListener;
@@ -32,7 +32,7 @@ public class NewsItemRecyclerViewAdapter extends RecyclerView.Adapter<NewsItemRe
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        NewsItemDataBinding binding = NewsItemDataBinding.inflate(inflater, parent, false);
+        NewsItemDataBinding binding = NewsItemDataBinding.inflate(inflater, parent, false, this);
         return new ViewHolder(binding);
     }
 
@@ -71,10 +71,15 @@ public class NewsItemRecyclerViewAdapter extends RecyclerView.Adapter<NewsItemRe
         return mData.getItems().size();
     }
 
-    @BindingAdapter({"url", "onDownloadComplete"})
-    public static void doAsyncDownloadImage(ImageView view, String url, OnImageDownloadCompleteListener aListener) {
+    @BindingAdapter({"id", "url", "onDownloadComplete"})
+    public void doAsyncDownloadImage(ImageView view, long id, String url, OnImageDownloadCompleteListener aListener) {
  //       Picasso.get().load(url).into(view);
-        new AsyncImageDownloader(view.getContext(), aListener).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, url);
+       new AsyncImageDownloader(view.getContext(), aListener).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, url);
+    }
+
+    @Override
+    public NewsItemRecyclerViewAdapter getNewsItemRecyclerViewAdapter() {
+        return this;
     }
 
     public interface OnImageDownloadCompleteListener {
@@ -104,5 +109,4 @@ public class NewsItemRecyclerViewAdapter extends RecyclerView.Adapter<NewsItemRe
             return super.toString() + " '" + mBinding.tvTitle.getText() + "'";
         }
     }
-
 }
