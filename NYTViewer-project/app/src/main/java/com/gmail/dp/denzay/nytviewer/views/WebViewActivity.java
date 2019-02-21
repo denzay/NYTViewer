@@ -14,13 +14,16 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.ProgressBar;
 
+import com.gmail.dp.denzay.nytviewer.NYTViewerApp;
 import com.gmail.dp.denzay.nytviewer.R;
-import com.gmail.dp.denzay.nytviewer.utils.CacheStorageUtils;
 import com.gmail.dp.denzay.nytviewer.adapters.FavouritesDBAdapter;
 import com.gmail.dp.denzay.nytviewer.models.NewsItem;
+import com.gmail.dp.denzay.nytviewer.utils.CacheStorageUtils;
 
 import java.io.File;
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import javax.inject.Inject;
 
 public class WebViewActivity extends AppCompatActivity {
 
@@ -35,6 +38,8 @@ public class WebViewActivity extends AppCompatActivity {
     private Handler mHandler;
     private boolean mIsCachedItem;
     private boolean mIsPageDownloaded = false;
+    @Inject
+    FavouritesDBAdapter _mDBAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +47,8 @@ public class WebViewActivity extends AppCompatActivity {
         setContentView(R.layout.activity_web_view);
         mWebView = findViewById(R.id.wb_WebView);
         mProgressBar = findViewById(R.id.pb_WebView);
+
+        NYTViewerApp.getAppComponent().inject(this);
 
         WebSettings settings = mWebView.getSettings();
         settings.setJavaScriptEnabled(true);
@@ -88,6 +95,11 @@ public class WebViewActivity extends AppCompatActivity {
         outState.putBoolean(KEY_IS_FAVOURITE, mIsFavourite.get());
     }
 
+    // инжектится в главном потоке, юзается в фоновых. Поэтому synchronized getter
+    private synchronized FavouritesDBAdapter getDBAdapter() {
+        return _mDBAdapter;
+    }
+
     private void updateFavouriteMenuIcon(MenuItem aMenuItem) {
         if (mIsFavourite.get())
             aMenuItem.setIcon(R.drawable.ic_star);
@@ -112,7 +124,7 @@ public class WebViewActivity extends AppCompatActivity {
         mWebView.saveWebArchive(fileName, true, (String value) -> {
             if (value == null) return; // ошибка сохранения веб архива (операция прервана)
             Thread t = new Thread(() -> {
-                FavouritesDBAdapter.getInstance().saveNewsItem(mNewsItem, value);
+                getDBAdapter().saveNewsItem(mNewsItem, value);
             });
             t.start();
         });
@@ -120,8 +132,8 @@ public class WebViewActivity extends AppCompatActivity {
 
     private void deleteWebPageFromCache() {
         Thread t = new Thread(() -> {
-            FavouritesDBAdapter dbAdapter = FavouritesDBAdapter.getInstance();
-            String filePath = dbAdapter.getCachedNewsItemPath(mNewsItem.id);
+            FavouritesDBAdapter dbAdapter = getDBAdapter();
+            String filePath = getDBAdapter().getCachedNewsItemPath(mNewsItem.id);
 
             CacheStorageUtils.deleteFile(filePath);
             dbAdapter.deleteNewsItem(mNewsItem.id);
@@ -132,7 +144,7 @@ public class WebViewActivity extends AppCompatActivity {
     private void setPageCached() {
         Thread t = new Thread(() -> {
             boolean result = false;
-            String filePath = FavouritesDBAdapter.getInstance().getCachedNewsItemPath(mNewsItem.id);
+            String filePath = getDBAdapter().getCachedNewsItemPath(mNewsItem.id);
             if (filePath != null) {
                 File f = new File(filePath);
                 if (Environment.getExternalStorageState(f).equals(Environment.MEDIA_MOUNTED))

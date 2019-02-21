@@ -16,15 +16,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.gmail.dp.denzay.nytviewer.NYTViewerApp;
 import com.gmail.dp.denzay.nytviewer.R;
-import com.gmail.dp.denzay.nytviewer.utils.CacheStorageUtils;
 import com.gmail.dp.denzay.nytviewer.adapters.FavouritesDBAdapter;
 import com.gmail.dp.denzay.nytviewer.adapters.NewsItemFavouritesRecyclerViewAdapter;
 import com.gmail.dp.denzay.nytviewer.models.NewsContent;
 import com.gmail.dp.denzay.nytviewer.models.NewsItem;
+import com.gmail.dp.denzay.nytviewer.utils.CacheStorageUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.inject.Inject;
 
 public class FavouritesFragment extends NewsListFragment {
 
@@ -35,6 +38,8 @@ public class FavouritesFragment extends NewsListFragment {
 
     private NewsItemFavouritesRecyclerViewAdapter mAdapter;
     private Handler mHandler;
+    @Inject
+    FavouritesDBAdapter _mDBAdapter;
 
     public FavouritesFragment(){
     }
@@ -43,6 +48,8 @@ public class FavouritesFragment extends NewsListFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_newsitem_list_favourites, container, false);
         getActivity().setTitle(R.string.action_favourites);
+
+        NYTViewerApp.getAppComponent().inject(this);
 
         if (savedInstanceState == null)
             mNewsContent = new NewsContent();
@@ -105,7 +112,7 @@ public class FavouritesFragment extends NewsListFragment {
                     int i = viewHolder.getAdapterPosition();
                     NewsItem newsItem = mAdapter.getItem(i);
 
-                    FavouritesDBAdapter dbAdapter = FavouritesDBAdapter.getInstance();
+                    FavouritesDBAdapter dbAdapter = getDBAdapter();
                     String filePath = dbAdapter.getCachedNewsItemPath(newsItem.id);
 
                     CacheStorageUtils.deleteFile(filePath);
@@ -122,10 +129,15 @@ public class FavouritesFragment extends NewsListFragment {
         }
     });
 
+    // инжектится в главном потоке, юзается в фоновых. Поэтому synchronized getter
+    private synchronized FavouritesDBAdapter getDBAdapter() {
+        return _mDBAdapter;
+    }
+
     private void LoadNewsContentFromDB() {
         Thread t = new Thread(() -> {
            List<NewsItem> newsItemList = new ArrayList<>();
-           FavouritesDBAdapter.getInstance().loadNewsItems(newsItemList);
+           getDBAdapter().loadNewsItems(newsItemList);
            for (NewsItem newsItem : newsItemList)
                mNewsContent.addItem(newsItem);
            mHandler.sendEmptyMessage(MSG_LOAD_COMPLETE);

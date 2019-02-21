@@ -16,19 +16,22 @@ import com.gmail.dp.denzay.nytviewer.views.FavouritesActivity;
 import com.gmail.dp.denzay.nytviewer.views.OnListFragmentInteractionListener;
 import com.gmail.dp.denzay.nytviewer.views.WebViewActivity;
 
+import javax.inject.Inject;
+
 public class MainActivity extends AppCompatActivity implements OnListFragmentInteractionListener {
 
     private SectionsPagerAdapter mSectionsPagerAdapter;
-    private FavouritesDBAdapter mDBAdapter;
+    @Inject
+    FavouritesDBAdapter mDBAdapter;
     private ViewPager mViewPager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        NYTViewerApp.getAppComponent().inject(this);
 
-        mDBAdapter = FavouritesDBAdapter.getInstance();
-        mDBAdapter.connect(getApplicationContext());
+        mDBAdapter.connect();
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);

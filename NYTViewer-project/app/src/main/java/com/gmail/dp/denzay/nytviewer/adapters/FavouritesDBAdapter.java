@@ -19,18 +19,16 @@ import java.util.List;
 
 public class FavouritesDBAdapter {
 
-    private static FavouritesDBAdapter mInstance;
     private static DBProvider mDBProvider;
+    private Context mContext;
 
-    public synchronized static FavouritesDBAdapter getInstance() {
-        if (mInstance == null)
-            mInstance = new FavouritesDBAdapter();
-        return mInstance;
+    public FavouritesDBAdapter(Context aContext) {
+        mContext = aContext;
     }
 
-    public synchronized void connect(Context aContext) {
+    public synchronized void connect() {
         if (mDBProvider == null)
-            mDBProvider = DBProvider.getInstance(aContext);
+            mDBProvider = DBProvider.getInstance(mContext);
         if (!mDBProvider.isConnected())
             mDBProvider.connect();
     }
@@ -40,7 +38,6 @@ public class FavouritesDBAdapter {
             mDBProvider.disconnect();
             mDBProvider = null;
         }
-        mInstance = null;
     }
 
     public void saveNewsItem(NewsItem aNewsItem, String aFilePath) {
