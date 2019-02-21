@@ -1,6 +1,8 @@
 package com.gmail.dp.denzay.nytviewer.adapters;
 
+import android.databinding.BindingAdapter;
 import android.os.AsyncTask;
+import android.widget.ImageView;
 
 import com.gmail.dp.denzay.nytviewer.AsyncDBImageDownloader;
 import com.gmail.dp.denzay.nytviewer.models.NewsContent;
@@ -13,9 +15,10 @@ public class NewsItemFavouritesRecyclerViewAdapter extends NewsItemRecyclerViewA
         super(aNewsContent, aListener);
     }
 
+    @BindingAdapter({"id", "url", "onDownloadComplete"})
     @Override
-    protected void doAsyncDownloadImage(ViewHolder holder) {
-        new AsyncDBImageDownloader(holder.mImageView.getContext(), holder.mCallback).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, String.valueOf(holder.mItem.id));
+    public void doAsyncDownloadImage(ImageView view, long id, String url, OnImageDownloadCompleteListener aListener) {
+        new AsyncDBImageDownloader(view.getContext(), aListener).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, String.valueOf(id));
     }
 
     public NewsItem getItem(int aIndex) {
