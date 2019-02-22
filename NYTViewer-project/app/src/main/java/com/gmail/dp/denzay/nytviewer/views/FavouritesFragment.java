@@ -1,7 +1,6 @@
 package com.gmail.dp.denzay.nytviewer.views;
 
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -38,8 +37,13 @@ public class FavouritesFragment extends NewsListFragment {
 
     private NewsItemFavouritesRecyclerViewAdapter mAdapter;
     private Handler mHandler;
+
     @Inject
     FavouritesDBAdapter _mDBAdapter;
+    @Inject
+    SharedPreferences mSharedPreferences;
+    @Inject
+    CacheStorageUtils mCacheStorageUtils;
 
     public FavouritesFragment(){
     }
@@ -115,7 +119,7 @@ public class FavouritesFragment extends NewsListFragment {
                     FavouritesDBAdapter dbAdapter = getDBAdapter();
                     String filePath = dbAdapter.getCachedNewsItemPath(newsItem.id);
 
-                    CacheStorageUtils.deleteFile(filePath);
+                    mCacheStorageUtils.deleteFile(filePath);
                     dbAdapter.deleteNewsItem(newsItem.id);
 
                     Message msg = new Message();
@@ -147,12 +151,10 @@ public class FavouritesFragment extends NewsListFragment {
 
     private void showHint() {
         // Отображаем подсказку один раз за время работы приложения
-        SharedPreferences prefs = getActivity().getPreferences(Context.MODE_PRIVATE);
-        if(prefs == null) return;
-        boolean isShowHint = prefs.getBoolean(TAG_IS_SHOW_HINT, true);
+        boolean isShowHint = mSharedPreferences.getBoolean(TAG_IS_SHOW_HINT, true);
         if (!isShowHint) return;
         Toast.makeText(getContext(), R.string.hint_to_delete, Toast.LENGTH_LONG).show();
-        prefs.edit().putBoolean(TAG_IS_SHOW_HINT, false).apply();
+        mSharedPreferences.edit().putBoolean(TAG_IS_SHOW_HINT, false).apply();
     }
 
     @Override

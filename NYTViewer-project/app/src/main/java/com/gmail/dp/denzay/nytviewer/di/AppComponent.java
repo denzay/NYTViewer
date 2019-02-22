@@ -9,7 +9,7 @@ import javax.inject.Singleton;
 
 import dagger.Component;
 
-@Component(modules = {AppModule.class, FavouritesDBModule.class})
+@Component(modules = {AppModule.class, CacheStorageModule.class, FavouritesDBModule.class, FavouriteCachedDBHelperModule.class})
 @Singleton
 public interface AppComponent {
     void inject(MainActivity aMainActivity);

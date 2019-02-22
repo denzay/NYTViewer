@@ -4,12 +4,13 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 public final class DBProvider {
 
-    private FavouriteCachedDBHelper mDbHelper;
+    private SQLiteOpenHelper mDbHelper;
     private SQLiteDatabase mDB = null;
 
     private static DBProvider mInstance = null;

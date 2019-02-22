@@ -16,7 +16,9 @@ public class NYTViewerApp extends Application {
         mAppComponent = DaggerAppComponent.builder().appModule(new AppModule(this)).build();
     }
 
+
     public static AppComponent getAppComponent() {
         return mAppComponent;
     }
+
 }

@@ -40,6 +40,8 @@ public class WebViewActivity extends AppCompatActivity {
     private boolean mIsPageDownloaded = false;
     @Inject
     FavouritesDBAdapter _mDBAdapter;
+    @Inject
+    CacheStorageUtils mCacheStorageUtils;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -119,7 +121,7 @@ public class WebViewActivity extends AppCompatActivity {
             return;
         }
 
-        String fileName = CacheStorageUtils.getExternalFolderPath(this);
+        String fileName = mCacheStorageUtils.getExternalFolderPath();
 
         mWebView.saveWebArchive(fileName, true, (String value) -> {
             if (value == null) return; // ошибка сохранения веб архива (операция прервана)
@@ -135,7 +137,7 @@ public class WebViewActivity extends AppCompatActivity {
             FavouritesDBAdapter dbAdapter = getDBAdapter();
             String filePath = getDBAdapter().getCachedNewsItemPath(mNewsItem.id);
 
-            CacheStorageUtils.deleteFile(filePath);
+            mCacheStorageUtils.deleteFile(filePath);
             dbAdapter.deleteNewsItem(mNewsItem.id);
         });
         t.start();
