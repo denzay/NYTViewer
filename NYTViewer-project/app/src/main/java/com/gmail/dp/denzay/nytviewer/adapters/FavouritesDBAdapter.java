@@ -1,12 +1,12 @@
 package com.gmail.dp.denzay.nytviewer.adapters;
 
 import android.content.ContentValues;
-import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.annotation.Nullable;
 
+import com.gmail.dp.denzay.nytviewer.NYTViewerApp;
 import com.gmail.dp.denzay.nytviewer.data.DBProvider;
 import com.gmail.dp.denzay.nytviewer.data.FavouriteCachedContract;
 import com.gmail.dp.denzay.nytviewer.data.FavouriteCachedContract.FavouriteCachedEntry;
@@ -16,21 +16,16 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.List;
 
+import javax.inject.Inject;
+
 
 public class FavouritesDBAdapter {
 
-    private static FavouritesDBAdapter mInstance;
-    private static DBProvider mDBProvider;
+    @Inject
+    DBProvider mDBProvider;
 
-    public synchronized static FavouritesDBAdapter getInstance() {
-        if (mInstance == null)
-            mInstance = new FavouritesDBAdapter();
-        return mInstance;
-    }
-
-    public synchronized void connect(Context aContext) {
-        if (mDBProvider == null)
-            mDBProvider = DBProvider.getInstance(aContext);
+    public synchronized void connect() {
+        NYTViewerApp.getAppComponent().inject(this);
         if (!mDBProvider.isConnected())
             mDBProvider.connect();
     }
@@ -38,9 +33,8 @@ public class FavouritesDBAdapter {
     public synchronized void disconnect() {
         if (mDBProvider != null) {
             mDBProvider.disconnect();
-            mDBProvider = null;
         }
-        mInstance = null;
+        mDBProvider = null;
     }
 
     public void saveNewsItem(NewsItem aNewsItem, String aFilePath) {

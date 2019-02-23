@@ -1,7 +1,6 @@
 package com.gmail.dp.denzay.nytviewer.views;
 
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -16,15 +15,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.gmail.dp.denzay.nytviewer.NYTViewerApp;
 import com.gmail.dp.denzay.nytviewer.R;
-import com.gmail.dp.denzay.nytviewer.utils.CacheStorageUtils;
 import com.gmail.dp.denzay.nytviewer.adapters.FavouritesDBAdapter;
 import com.gmail.dp.denzay.nytviewer.adapters.NewsItemFavouritesRecyclerViewAdapter;
 import com.gmail.dp.denzay.nytviewer.models.NewsContent;
 import com.gmail.dp.denzay.nytviewer.models.NewsItem;
+import com.gmail.dp.denzay.nytviewer.utils.CacheStorageUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.inject.Inject;
 
 public class FavouritesFragment extends NewsListFragment {
 
@@ -36,6 +38,13 @@ public class FavouritesFragment extends NewsListFragment {
     private NewsItemFavouritesRecyclerViewAdapter mAdapter;
     private Handler mHandler;
 
+    @Inject
+    FavouritesDBAdapter _mDBAdapter;
+    @Inject
+    SharedPreferences mSharedPreferences;
+    @Inject
+    CacheStorageUtils mCacheStorageUtils;
+
     public FavouritesFragment(){
     }
 
@@ -43,6 +52,8 @@ public class FavouritesFragment extends NewsListFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_newsitem_list_favourites, container, false);
         getActivity().setTitle(R.string.action_favourites);
+
+        NYTViewerApp.getAppComponent().inject(this);
 
         if (savedInstanceState == null)
             mNewsContent = new NewsContent();
@@ -105,10 +116,10 @@ public class FavouritesFragment extends NewsListFragment {
                     int i = viewHolder.getAdapterPosition();
                     NewsItem newsItem = mAdapter.getItem(i);
 
-                    FavouritesDBAdapter dbAdapter = FavouritesDBAdapter.getInstance();
+                    FavouritesDBAdapter dbAdapter = getDBAdapter();
                     String filePath = dbAdapter.getCachedNewsItemPath(newsItem.id);
 
-                    CacheStorageUtils.deleteFile(filePath);
+                    mCacheStorageUtils.deleteFile(filePath);
                     dbAdapter.deleteNewsItem(newsItem.id);
 
                     Message msg = new Message();
@@ -122,10 +133,15 @@ public class FavouritesFragment extends NewsListFragment {
         }
     });
 
+    // инжектится в главном потоке, юзается в фоновых. Поэтому synchronized getter
+    private synchronized FavouritesDBAdapter getDBAdapter() {
+        return _mDBAdapter;
+    }
+
     private void LoadNewsContentFromDB() {
         Thread t = new Thread(() -> {
            List<NewsItem> newsItemList = new ArrayList<>();
-           FavouritesDBAdapter.getInstance().loadNewsItems(newsItemList);
+           getDBAdapter().loadNewsItems(newsItemList);
            for (NewsItem newsItem : newsItemList)
                mNewsContent.addItem(newsItem);
            mHandler.sendEmptyMessage(MSG_LOAD_COMPLETE);
@@ -135,12 +151,10 @@ public class FavouritesFragment extends NewsListFragment {
 
     private void showHint() {
         // Отображаем подсказку один раз за время работы приложения
-        SharedPreferences prefs = getActivity().getPreferences(Context.MODE_PRIVATE);
-        if(prefs == null) return;
-        boolean isShowHint = prefs.getBoolean(TAG_IS_SHOW_HINT, true);
+        boolean isShowHint = mSharedPreferences.getBoolean(TAG_IS_SHOW_HINT, true);
         if (!isShowHint) return;
         Toast.makeText(getContext(), R.string.hint_to_delete, Toast.LENGTH_LONG).show();
-        prefs.edit().putBoolean(TAG_IS_SHOW_HINT, false).apply();
+        mSharedPreferences.edit().putBoolean(TAG_IS_SHOW_HINT, false).apply();
     }
 
     @Override
