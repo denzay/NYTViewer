@@ -1,28 +1,26 @@
 package com.gmail.dp.denzay.nytviewer.data;
 
 import android.content.ContentValues;
-import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.gmail.dp.denzay.nytviewer.NYTViewerApp;
+
+import javax.inject.Inject;
+
 public final class DBProvider {
 
-    private SQLiteOpenHelper mDbHelper;
+    @Inject
+    SQLiteOpenHelper mDbHelper;
     private SQLiteDatabase mDB = null;
 
-    private static DBProvider mInstance = null;
 
-    public synchronized static DBProvider getInstance(Context aContext) {
-        if (mInstance == null)
-            mInstance = new DBProvider(aContext);
-        return mInstance;
-    }
-
-    private DBProvider(Context aContext) {
-        mDbHelper = new FavouriteCachedDBHelper(aContext);
+    @Inject
+    public DBProvider() {
+        NYTViewerApp.getAppComponent().inject(this);
     }
 
     public synchronized void connect(){

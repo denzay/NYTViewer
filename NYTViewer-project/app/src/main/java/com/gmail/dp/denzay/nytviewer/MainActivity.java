@@ -30,7 +30,6 @@ public class MainActivity extends AppCompatActivity implements OnListFragmentInt
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         NYTViewerApp.getAppComponent().inject(this);
-
         mDBAdapter.connect();
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);

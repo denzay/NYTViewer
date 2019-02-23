@@ -1,12 +1,12 @@
 package com.gmail.dp.denzay.nytviewer.adapters;
 
 import android.content.ContentValues;
-import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.annotation.Nullable;
 
+import com.gmail.dp.denzay.nytviewer.NYTViewerApp;
 import com.gmail.dp.denzay.nytviewer.data.DBProvider;
 import com.gmail.dp.denzay.nytviewer.data.FavouriteCachedContract;
 import com.gmail.dp.denzay.nytviewer.data.FavouriteCachedContract.FavouriteCachedEntry;
@@ -16,19 +16,16 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.List;
 
+import javax.inject.Inject;
+
 
 public class FavouritesDBAdapter {
 
-    private static DBProvider mDBProvider;
-    private Context mContext;
-
-    public FavouritesDBAdapter(Context aContext) {
-        mContext = aContext;
-    }
+    @Inject
+    DBProvider mDBProvider;
 
     public synchronized void connect() {
-        if (mDBProvider == null)
-            mDBProvider = DBProvider.getInstance(mContext);
+        NYTViewerApp.getAppComponent().inject(this);
         if (!mDBProvider.isConnected())
             mDBProvider.connect();
     }
@@ -36,8 +33,8 @@ public class FavouritesDBAdapter {
     public synchronized void disconnect() {
         if (mDBProvider != null) {
             mDBProvider.disconnect();
-            mDBProvider = null;
         }
+        mDBProvider = null;
     }
 
     public void saveNewsItem(NewsItem aNewsItem, String aFilePath) {

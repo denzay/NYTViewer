@@ -1,6 +1,5 @@
 package com.gmail.dp.denzay.nytviewer.di;
 
-import android.content.Context;
 import android.support.annotation.NonNull;
 
 import com.gmail.dp.denzay.nytviewer.adapters.FavouritesDBAdapter;
@@ -11,12 +10,12 @@ import dagger.Module;
 import dagger.Provides;
 
 @Module
-public class FavouritesDBModule {
+public class FavouritesDBAdapterModule {
 
     @Provides
     @Singleton
     @NonNull
-    public FavouritesDBAdapter providesFavouritesDBAdapter(@NonNull Context aContext) {
-        return new FavouritesDBAdapter(aContext);
+    public FavouritesDBAdapter providesFavouritesDBAdapter() {
+        return new FavouritesDBAdapter();
     }
 }
