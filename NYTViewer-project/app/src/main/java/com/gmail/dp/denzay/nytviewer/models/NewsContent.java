@@ -12,6 +12,14 @@ public class NewsContent {
         ITEMS.add(item);
     }
 
+    public void deleteItemById(long aID) {
+        for (int i = 0; i < ITEMS.size(); i++)
+            if(ITEMS.get(i).id == aID) {
+                ITEMS.remove(i);
+                break;
+            }
+    }
+
     public List<NewsItem> getItems() {
         return ITEMS;
     }

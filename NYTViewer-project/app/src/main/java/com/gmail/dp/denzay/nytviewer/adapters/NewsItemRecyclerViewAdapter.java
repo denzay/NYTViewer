@@ -20,7 +20,7 @@ import com.gmail.dp.denzay.nytviewer.views.OnListFragmentInteractionListener;
 
 public class NewsItemRecyclerViewAdapter extends RecyclerView.Adapter<NewsItemRecyclerViewAdapter.ViewHolder> implements android.databinding.DataBindingComponent {
 
-    protected final NewsContent mData;
+    protected NewsContent mData;
     protected final OnListFragmentInteractionListener mListener;
     protected int mLastPosition = -1;
 
@@ -69,6 +69,11 @@ public class NewsItemRecyclerViewAdapter extends RecyclerView.Adapter<NewsItemRe
     @Override
     public int getItemCount() {
         return mData.getItems().size();
+    }
+
+    public void updateData(NewsContent aNewsContent) {
+        mData = aNewsContent;
+        notifyDataSetChanged();
     }
 
     @BindingAdapter({"id", "url", "onDownloadComplete"})

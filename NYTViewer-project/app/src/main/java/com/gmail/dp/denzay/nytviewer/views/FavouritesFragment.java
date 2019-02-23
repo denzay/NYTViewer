@@ -1,12 +1,13 @@
 package com.gmail.dp.denzay.nytviewer.views;
 
 import android.app.AlertDialog;
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
@@ -17,78 +18,42 @@ import android.widget.Toast;
 
 import com.gmail.dp.denzay.nytviewer.NYTViewerApp;
 import com.gmail.dp.denzay.nytviewer.R;
-import com.gmail.dp.denzay.nytviewer.adapters.FavouritesDBAdapter;
 import com.gmail.dp.denzay.nytviewer.adapters.NewsItemFavouritesRecyclerViewAdapter;
+import com.gmail.dp.denzay.nytviewer.databinding.NewsItemListFavouritesDataBinding;
 import com.gmail.dp.denzay.nytviewer.models.NewsContent;
 import com.gmail.dp.denzay.nytviewer.models.NewsItem;
-import com.gmail.dp.denzay.nytviewer.utils.CacheStorageUtils;
-
-import java.util.ArrayList;
-import java.util.List;
+import com.gmail.dp.denzay.nytviewer.view_models.DBNewsContentViewModel;
 
 import javax.inject.Inject;
 
 public class FavouritesFragment extends NewsListFragment {
 
-    private static final int MSG_LOAD_COMPLETE = 1;
-    private static final int MSG_DELETE_COMPLETE = 2;
     private static final String TAG_IS_SHOW_HINT = "IS_SHOW_HINT";
-    private static final String KEY_DB_DATA_LIST = "DB_DATA_LIST";
-
     private NewsItemFavouritesRecyclerViewAdapter mAdapter;
-    private Handler mHandler;
 
-    @Inject
-    FavouritesDBAdapter _mDBAdapter;
     @Inject
     SharedPreferences mSharedPreferences;
-    @Inject
-    CacheStorageUtils mCacheStorageUtils;
 
     public FavouritesFragment(){
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_newsitem_list_favourites, container, false);
         getActivity().setTitle(R.string.action_favourites);
-
+        NewsItemListFavouritesDataBinding binding = NewsItemListFavouritesDataBinding.inflate(inflater,  container, false);
         NYTViewerApp.getAppComponent().inject(this);
 
-        if (savedInstanceState == null)
-            mNewsContent = new NewsContent();
-        else {
-            mNewsContent = mRetainedDataFragment.getNewsContent();
-        }
-
-        mAdapter = new NewsItemFavouritesRecyclerViewAdapter(mNewsContent, mListener);
-
-        if (rootView instanceof RecyclerView) {
-            RecyclerView recyclerView = ((RecyclerView) rootView);
-            recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 1));
-            recyclerView.setAdapter(mAdapter);
-
-            itemTouchHelper.attachToRecyclerView(recyclerView);
-        }
-
-        mHandler = new Handler((Message aMsg) -> {
-            switch (aMsg.what) {
-                case MSG_LOAD_COMPLETE:
-                    mAdapter.notifyDataSetChanged();
-                    break;
-                case MSG_DELETE_COMPLETE:
-                    mAdapter.removeItem(aMsg.arg1);
-                    mAdapter.notifyItemRemoved(aMsg.arg1);
-                    break;
-            }
-            return true;
-        });
+        NewsContent dummyNewsContent = new NewsContent();
+        mAdapter = new NewsItemFavouritesRecyclerViewAdapter(dummyNewsContent, mListener);
+        binding.recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 1));
+        binding.recyclerView.setAdapter(mAdapter);
+        itemTouchHelper.attachToRecyclerView(binding.recyclerView);
 
         if (savedInstanceState == null) {
-            LoadNewsContentFromDB();
             showHint();
         }
-        return rootView;
+        LoadNewsContentFromDB();
+        return binding.getRoot();
     }
 
     ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
@@ -112,41 +77,27 @@ public class FavouritesFragment extends NewsListFragment {
             });
 
             ad.setPositiveButton(R.string.OK, (DialogInterface dialog, int which) -> {
-                Thread t = new Thread(() -> {
-                    int i = viewHolder.getAdapterPosition();
-                    NewsItem newsItem = mAdapter.getItem(i);
+                int i = viewHolder.getAdapterPosition();
+                NewsItem newsItem = mAdapter.getItem(i);
+                // ToDo: как-то костыльно
+                DBNewsContentViewModel dbNewsContentViewModel = ViewModelProviders.of(FavouritesFragment.this).get(DBNewsContentViewModel.class);
+                dbNewsContentViewModel.deleteNewsItem(newsItem.id);
 
-                    FavouritesDBAdapter dbAdapter = getDBAdapter();
-                    String filePath = dbAdapter.getCachedNewsItemPath(newsItem.id);
-
-                    mCacheStorageUtils.deleteFile(filePath);
-                    dbAdapter.deleteNewsItem(newsItem.id);
-
-                    Message msg = new Message();
-                    msg.what = MSG_DELETE_COMPLETE;
-                    msg.arg1 = i;
-                    mHandler.sendMessage(msg);
-                });
-                t.start();
+                mAdapter.removeItem(i);
+                mAdapter.notifyItemRemoved(i);
             });
             ad.show();
         }
     });
 
-    // инжектится в главном потоке, юзается в фоновых. Поэтому synchronized getter
-    private synchronized FavouritesDBAdapter getDBAdapter() {
-        return _mDBAdapter;
-    }
-
     private void LoadNewsContentFromDB() {
-        Thread t = new Thread(() -> {
-           List<NewsItem> newsItemList = new ArrayList<>();
-           getDBAdapter().loadNewsItems(newsItemList);
-           for (NewsItem newsItem : newsItemList)
-               mNewsContent.addItem(newsItem);
-           mHandler.sendEmptyMessage(MSG_LOAD_COMPLETE);
-        });
-        t.start();
+        DBNewsContentViewModel dbNewsContentViewModel = ViewModelProviders.of(this).get(DBNewsContentViewModel.class);
+        LiveData<NewsContent> dbNewsContent = dbNewsContentViewModel.getData();
+        // Подписываемся один раз, иначе плодятся колбеки
+        if (!dbNewsContent.hasActiveObservers())
+            dbNewsContent.observe(this, (@Nullable NewsContent aNewsContent) -> {
+                mAdapter.updateData(aNewsContent);
+            });
     }
 
     private void showHint() {
@@ -155,11 +106,6 @@ public class FavouritesFragment extends NewsListFragment {
         if (!isShowHint) return;
         Toast.makeText(getContext(), R.string.hint_to_delete, Toast.LENGTH_LONG).show();
         mSharedPreferences.edit().putBoolean(TAG_IS_SHOW_HINT, false).apply();
-    }
-
-    @Override
-    protected String getRetainedDataFragmentTag() {
-        return KEY_DB_DATA_LIST;
     }
 
 }

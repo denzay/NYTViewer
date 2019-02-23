@@ -4,6 +4,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
+import com.gmail.dp.denzay.nytviewer.view_models.NewsContentViewModel;
 import com.gmail.dp.denzay.nytviewer.views.NewsListFragment;
 
 public class SectionsPagerAdapter extends FragmentPagerAdapter {
@@ -16,7 +17,7 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
     @Override
     public Fragment getItem(int position) {
-        return NewsListFragment.newInstance(NewsListFragment.NewsFragmentType.values()[position]);
+        return NewsListFragment.newInstance(NewsContentViewModel.NewsType.values()[position]);
     }
 
     @Override

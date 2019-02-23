@@ -53,7 +53,7 @@ public class NYTRequestAdapter {
     @Nullable
     public static String processHTTPError(final int aErrorCode) {
         // 407 - ошибка лимита запросов, её обрабатываем через parseError
-
+   //     HttpURLConnection.HTTP_BAD_GATEWAY
         switch (aErrorCode) {
             case 400:
                 return "Bad Request";
@@ -77,5 +77,7 @@ public class NYTRequestAdapter {
                 return null;
         }
     }
+
+
 
 }
