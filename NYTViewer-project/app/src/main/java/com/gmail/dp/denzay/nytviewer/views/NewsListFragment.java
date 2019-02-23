@@ -7,9 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +15,7 @@ import android.widget.Toast;
 
 import com.gmail.dp.denzay.nytviewer.R;
 import com.gmail.dp.denzay.nytviewer.adapters.NewsItemRecyclerViewAdapter;
+import com.gmail.dp.denzay.nytviewer.databinding.NewsItemListDataBinding;
 import com.gmail.dp.denzay.nytviewer.models.NewsContent;
 import com.gmail.dp.denzay.nytviewer.view_models.NewsContentModelFactory;
 import com.gmail.dp.denzay.nytviewer.view_models.NewsContentResponse;
@@ -30,7 +29,7 @@ public class NewsListFragment extends Fragment {
     private NewsContentViewModel.NewsType mNewsType;
 
     private NewsItemRecyclerViewAdapter mNewsItemRecyclerViewAdapter;
-    private SwipeRefreshLayout mSwipeRefreshLayout;
+    private NewsItemListDataBinding mBinding;
 
     protected OnListFragmentInteractionListener mListener;
     protected NewsContent mNewsContent;
@@ -66,23 +65,20 @@ public class NewsListFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_newsitem_list, container, false);
+        mBinding = NewsItemListDataBinding.inflate(inflater,  container, false);
+        mBinding.swipeContainer.setOnRefreshListener(() -> doLoadNews(mNewsType, true));
+        mBinding.swipeContainer.setColorSchemeResources(R.color.colorPrimary);
 
-        mSwipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.swipe_container);
-        mSwipeRefreshLayout.setOnRefreshListener(() -> doLoadNews(mNewsType, true));
-        mSwipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary);
-
-        RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.list);
-        Context context = recyclerView.getContext();
-        recyclerView.setLayoutManager(new LinearLayoutManager(context));
+        Context context = mBinding.recyclerView.getContext();
+        mBinding.recyclerView.setLayoutManager(new LinearLayoutManager(context));
 
         mNewsContent = new NewsContent();
         mNewsItemRecyclerViewAdapter = new NewsItemRecyclerViewAdapter(mNewsContent, mListener);
-        recyclerView.setAdapter(mNewsItemRecyclerViewAdapter);
+        mBinding.recyclerView.setAdapter(mNewsItemRecyclerViewAdapter);
 
         doLoadNews(mNewsType, savedInstanceState == null);
 
-        return rootView;
+        return mBinding.getRoot();
     }
 
     @Override
@@ -102,7 +98,7 @@ public class NewsListFragment extends Fragment {
     }
 
     private void doLoadNews(NewsContentViewModel.NewsType aNewsFragmentType, boolean aForceLoad) {
-        mSwipeRefreshLayout.setRefreshing(true);
+        mBinding.swipeContainer.setRefreshing(true);
 
         NewsContentViewModel newsContentViewModel = ViewModelProviders.of(this, new NewsContentModelFactory(getActivity().getApplication(), aNewsFragmentType)).get(NewsContentViewModel.class);
         if (aForceLoad) {
@@ -111,9 +107,10 @@ public class NewsListFragment extends Fragment {
 
         LiveData<NewsContentResponse<NewsContent>> newsContent = newsContentViewModel.getData();
 
+        // Подписываемся один раз, иначе плодятся колбеки
         if (!newsContent.hasActiveObservers())
             newsContent.observe(this, (@Nullable NewsContentResponse<NewsContent> aNewsContentResponse) -> {
-                mSwipeRefreshLayout.setRefreshing(false);
+                mBinding.swipeContainer.setRefreshing(false);
                 if (aNewsContentResponse.getError() != null) {
                     Toast.makeText(NewsListFragment.this.getContext(), aNewsContentResponse.getError().getMessage(), Toast.LENGTH_LONG).show();
                     return;
