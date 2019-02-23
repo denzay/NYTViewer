@@ -4,6 +4,7 @@ import com.gmail.dp.denzay.nytviewer.AsyncDBImageDownloader;
 import com.gmail.dp.denzay.nytviewer.MainActivity;
 import com.gmail.dp.denzay.nytviewer.adapters.FavouritesDBAdapter;
 import com.gmail.dp.denzay.nytviewer.data.DBProvider;
+import com.gmail.dp.denzay.nytviewer.view_models.DBNewsContentViewModel;
 import com.gmail.dp.denzay.nytviewer.views.FavouritesFragment;
 import com.gmail.dp.denzay.nytviewer.views.WebViewActivity;
 
@@ -22,4 +23,5 @@ public interface AppComponent {
     void inject(FavouritesDBAdapter aFavouritesDBAdapter);
     void inject(AsyncDBImageDownloader aAsyncDBImageDownloader);
     void inject(DBProvider aDBProvider);
+    void inject(DBNewsContentViewModel aDBNewsContentViewModel);
 }
