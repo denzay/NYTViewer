@@ -19,6 +19,7 @@ import android.widget.Toast;
 import com.gmail.dp.denzay.nytviewer.NYTViewerApp;
 import com.gmail.dp.denzay.nytviewer.R;
 import com.gmail.dp.denzay.nytviewer.adapters.NewsItemFavouritesRecyclerViewAdapter;
+import com.gmail.dp.denzay.nytviewer.databinding.NewsItemListFavouritesDataBinding;
 import com.gmail.dp.denzay.nytviewer.models.NewsContent;
 import com.gmail.dp.denzay.nytviewer.models.NewsItem;
 import com.gmail.dp.denzay.nytviewer.view_models.DBNewsContentViewModel;
@@ -38,27 +39,21 @@ public class FavouritesFragment extends NewsListFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_newsitem_list_favourites, container, false);
         getActivity().setTitle(R.string.action_favourites);
-
+        NewsItemListFavouritesDataBinding binding = NewsItemListFavouritesDataBinding.inflate(inflater,  container, false);
         NYTViewerApp.getAppComponent().inject(this);
 
         NewsContent dummyNewsContent = new NewsContent();
         mAdapter = new NewsItemFavouritesRecyclerViewAdapter(dummyNewsContent, mListener);
-
-        if (rootView instanceof RecyclerView) {
-            RecyclerView recyclerView = ((RecyclerView) rootView);
-            recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 1));
-            recyclerView.setAdapter(mAdapter);
-
-            itemTouchHelper.attachToRecyclerView(recyclerView);
-        }
+        binding.recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 1));
+        binding.recyclerView.setAdapter(mAdapter);
+        itemTouchHelper.attachToRecyclerView(binding.recyclerView);
 
         if (savedInstanceState == null) {
             showHint();
         }
         LoadNewsContentFromDB();
-        return rootView;
+        return binding.getRoot();
     }
 
     ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
