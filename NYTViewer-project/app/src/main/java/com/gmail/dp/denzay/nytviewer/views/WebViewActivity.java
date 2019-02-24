@@ -1,5 +1,6 @@
 package com.gmail.dp.denzay.nytviewer.views;
 
+import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -12,11 +13,11 @@ import android.view.View;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
-import android.widget.ProgressBar;
 
 import com.gmail.dp.denzay.nytviewer.NYTViewerApp;
 import com.gmail.dp.denzay.nytviewer.R;
 import com.gmail.dp.denzay.nytviewer.adapters.FavouritesDBAdapter;
+import com.gmail.dp.denzay.nytviewer.databinding.WebViewActivityDataBinding;
 import com.gmail.dp.denzay.nytviewer.models.NewsItem;
 import com.gmail.dp.denzay.nytviewer.utils.CacheStorageUtils;
 
@@ -31,8 +32,7 @@ public class WebViewActivity extends AppCompatActivity {
     public static final String KEY_IS_CACHED_ITEM = "IS_CACHED_ITEM";
     private static final String KEY_IS_FAVOURITE = "IS_FAVOURITE";
 
-    private WebView mWebView;
-    private ProgressBar mProgressBar;
+    private WebViewActivityDataBinding mBinding;
     private AtomicBoolean mIsFavourite = new AtomicBoolean(false);
     private NewsItem mNewsItem;
     private Handler mHandler;
@@ -46,23 +46,21 @@ public class WebViewActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_web_view);
-        mWebView = findViewById(R.id.wb_WebView);
-        mProgressBar = findViewById(R.id.pb_WebView);
 
+        mBinding = DataBindingUtil.setContentView(this, R.layout.activity_web_view);
         NYTViewerApp.getAppComponent().inject(this);
 
-        WebSettings settings = mWebView.getSettings();
+        WebSettings settings = mBinding.wbWebView.getSettings();
         settings.setJavaScriptEnabled(true);
-        mWebView.setScrollBarStyle(WebView.SCROLLBARS_OUTSIDE_OVERLAY);
+        mBinding.wbWebView.setScrollBarStyle(WebView.SCROLLBARS_OUTSIDE_OVERLAY);
 
-        mWebView.setWebChromeClient(new WebChromeClient(){
+        mBinding.wbWebView.setWebChromeClient(new WebChromeClient(){
             @Override
             public void onProgressChanged(WebView view, int newProgress) {
-                mProgressBar.setProgress(newProgress);
+                mBinding.pbWebView.setProgress(newProgress);
                 if(newProgress == 100){
                     mIsPageDownloaded = true;
-                    mProgressBar.setVisibility(View.GONE);
+                    mBinding.pbWebView.setVisibility(View.GONE);
                 }
             }
         });
@@ -78,14 +76,14 @@ public class WebViewActivity extends AppCompatActivity {
         });
 
         if (savedInstanceState != null) {
-            mWebView.restoreState(savedInstanceState);
+            mBinding.wbWebView.restoreState(savedInstanceState);
             mIsFavourite.set(savedInstanceState.getBoolean(KEY_IS_FAVOURITE));
             invalidateOptionsMenu();
         } else {
             if ((mNewsItem != null) && (mNewsItem.url != "")) {
                 if (!mIsCachedItem)
                     setPageCached();
-                mWebView.loadUrl(mIsCachedItem ? "file:///" + mNewsItem.url : mNewsItem.url);
+                mBinding.wbWebView.loadUrl(mIsCachedItem ? "file:///" + mNewsItem.url : mNewsItem.url);
             }
         }
     }
@@ -93,7 +91,7 @@ public class WebViewActivity extends AppCompatActivity {
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        mWebView.saveState(outState);
+        mBinding.wbWebView.saveState(outState);
         outState.putBoolean(KEY_IS_FAVOURITE, mIsFavourite.get());
     }
 
@@ -111,7 +109,7 @@ public class WebViewActivity extends AppCompatActivity {
 
     private void saveWebPageToCache() {
         if (!mIsPageDownloaded) {
-            Snackbar.make(mWebView, R.string.warning_save_page, Snackbar.LENGTH_SHORT)
+            Snackbar.make(mBinding.wbWebView, R.string.warning_save_page, Snackbar.LENGTH_SHORT)
                     .setAction(R.string.warning_got_it, (View v) -> {
                     })
                     .show();
@@ -123,7 +121,7 @@ public class WebViewActivity extends AppCompatActivity {
 
         String fileName = mCacheStorageUtils.getExternalFolderPath();
 
-        mWebView.saveWebArchive(fileName, true, (String value) -> {
+        mBinding.wbWebView.saveWebArchive(fileName, true, (String value) -> {
             if (value == null) return; // ошибка сохранения веб архива (операция прервана)
             Thread t = new Thread(() -> {
                 getDBAdapter().saveNewsItem(mNewsItem, value);
