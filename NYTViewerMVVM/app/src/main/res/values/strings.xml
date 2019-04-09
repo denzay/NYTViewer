@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">NYTViewer</string>
+    <string name="tab_text_1">Most emailed</string>
+    <string name="tab_text_2">Most shared</string>
+    <string name="tab_text_3">Most viewed</string>
+    <string name="OK">OK</string>
+    <string name="Cancel">Cancel</string>
+    <string name="action_favourites">Favourites</string>
+    <string name="delete_dialog_title">Confirm delete&#8230;</string>
+    <string name="confirm_delete">Are you sure to delete?</string>
+    <string name="hint_to_delete">Swipe to delete saved item</string>
+    <string name="warning_save_page">Please wait until the page has been downloaded</string>
+    <string name="warning_got_it">Got it!</string>
+
+    <string name="api_error_rate_limit">Too many requests. Please try again later</string>
+</resources>
