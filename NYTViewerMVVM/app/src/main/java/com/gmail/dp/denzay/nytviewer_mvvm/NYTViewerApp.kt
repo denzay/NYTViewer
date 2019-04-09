@@ -2,6 +2,7 @@ package com.gmail.dp.denzay.nytviewer_mvvm
 
 import android.app.Activity
 import android.app.Application
+import com.gmail.dp.denzay.nytviewer_mvvm.di.components.DaggerAppComponent
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasActivityInjector
@@ -14,4 +15,13 @@ class NYTViewerApp: Application(), HasActivityInjector {
 
     override fun activityInjector(): AndroidInjector<Activity> = dispatchingAndroidInjector
 
+    override fun onCreate() {
+        super.onCreate()
+
+        DaggerAppComponent
+            .builder()
+            .setContext(this)
+            .build()
+            .inject(this)
+    }
 }
