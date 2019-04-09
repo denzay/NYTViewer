@@ -10,4 +10,6 @@ ext.retrofit_version = "2.5.0"
 
 ext.okhttp_version = "3.12.0"
 
+ext.dagger_version = "2.16"
+
 
