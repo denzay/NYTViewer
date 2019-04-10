@@ -13,4 +13,5 @@
     <string name="warning_got_it">Got it!</string>
 
     <string name="api_error_rate_limit">Too many requests. Please try again later</string>
+
 </resources>

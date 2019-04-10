@@ -5,10 +5,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.gmail.dp.denzay.nytviewer_mvvm.R
-//import com.gmail.dp.denzay.nytviewer_mvvm.databinding.NewsItemListDataBinding
 import com.gmail.dp.denzay.nytviewer_mvvm.presentation.common.base.BaseFragment
 
 open class BaseNewsFragment: BaseFragment() {
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        return inflater.inflate(R.layout.fragment_newsitem_list, container, false)
+    }
 
 //    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =null {
 ////    //    val binding = NewsItemListDataBinding.inflate(inflater,  container, false)
@@ -18,8 +21,8 @@ open class BaseNewsFragment: BaseFragment() {
 //////
 //////
 //////        return binding.getRoot()
-////
-////
-////    }
+//////
+//////
+//////    }
 
 }
