@@ -1,11 +1,12 @@
 package com.gmail.dp.denzay.nytviewer_mvvm.presentation.activity_main.news.most_emailed
 
+import com.gmail.dp.denzay.nytviewer_mvvm.domain.most_emailed.MostEmailedUseCase
 import com.gmail.dp.denzay.nytviewer_mvvm.presentation.activity_main.news.common.BaseNewsViewModel
 import javax.inject.Inject
 
 class MostEmailedViewModel @Inject constructor(
-//        private val router: MostEmailedContract.Router,
-//        private val mostEmailedUseCase: MostEmailedUseCase
+      //  private val router: MostEmailedContract.Router
+        private val mostEmailedUseCase: MostEmailedUseCase
 ) : BaseNewsViewModel(), MostEmailedContract.ViewModel {
 
     override fun doLoadData() {

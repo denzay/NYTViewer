@@ -5,8 +5,9 @@ import android.content.Context
 import com.gmail.dp.denzay.nytviewer_mvvm.data.common.NetworkErrorHandler
 import retrofit2.HttpException
 import retrofit2.Response
+import javax.inject.Inject
 
-class NetworkErrorHandler(context: Context): NetworkErrorHandler {
+class NetworkErrorHandlerImpl @Inject constructor(context: Context): NetworkErrorHandler {
 
     override fun <T> handleError(response: Response<T>): Throwable {
         val code = response.code()

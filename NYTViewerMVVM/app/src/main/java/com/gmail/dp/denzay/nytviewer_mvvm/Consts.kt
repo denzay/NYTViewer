@@ -6,4 +6,7 @@ object Consts {
     const val ARTICLES_PERIOD_DAYS = 30
     const val BASE_URL = "https://api.nytimes.com/"
 
+
+    const val NETWORK_TIMEOUT_SEC = 10L
+
 }
