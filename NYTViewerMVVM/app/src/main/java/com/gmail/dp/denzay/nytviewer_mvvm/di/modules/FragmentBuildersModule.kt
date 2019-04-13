@@ -24,13 +24,13 @@ import dagger.android.ContributesAndroidInjector
 
 @Suppress("unused")
 @Module
-abstract class FragmentBuildersModule {
+interface FragmentBuildersModule {
     @ContributesAndroidInjector
-    abstract fun contributeMostEmailedFragment(): MostEmailedFragment
+    fun contributeMostEmailedFragment(): MostEmailedFragment
 
     @ContributesAndroidInjector
-    abstract fun contributeMostSharedFragment(): MostSharedFragment
+    fun contributeMostSharedFragment(): MostSharedFragment
 
     @ContributesAndroidInjector
-    abstract fun contributeMostViewedFragment(): MostViewedFragment
+    fun contributeMostViewedFragment(): MostViewedFragment
 }

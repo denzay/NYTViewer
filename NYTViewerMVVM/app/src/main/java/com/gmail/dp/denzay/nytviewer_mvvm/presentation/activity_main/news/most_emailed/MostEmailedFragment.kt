@@ -12,11 +12,13 @@ class MostEmailedFragment: BaseNewsFragment() {
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
 
+    lateinit var viewModel: MostEmailedViewModel
+
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         AndroidSupportInjection.inject(this)
 
-        val viewModel = ViewModelProviders.of(this).get(MostEmailedViewModel::class.java)
+        viewModel = ViewModelProviders.of(this, viewModelFactory).get(MostEmailedViewModel::class.java)
         subscribeToModel(viewModel)
     }
 

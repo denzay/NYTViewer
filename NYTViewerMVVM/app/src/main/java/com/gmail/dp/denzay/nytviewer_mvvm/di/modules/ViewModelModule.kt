@@ -27,11 +27,11 @@ import dagger.multibindings.IntoMap
 
 @Suppress("unused")
 @Module
-abstract class ViewModelModule {
+interface ViewModelModule {
     @Binds
     @IntoMap
     @ViewModelKey(MostEmailedViewModel::class)
-    abstract fun bindUserViewModel(userViewModel: MostEmailedViewModel): ViewModel
+    fun bindUserViewModel(userViewModel: MostEmailedViewModel): ViewModel
 //
 //    @Binds
 //    @IntoMap
@@ -44,5 +44,5 @@ abstract class ViewModelModule {
 //    abstract fun bindRepoViewModel(repoViewModel: RepoViewModel): ViewModel
 
     @Binds
-    abstract fun bindViewModelFactory(factory: ViewModelFactory): ViewModelProvider.Factory
+    fun bindViewModelFactory(factory: ViewModelFactory): ViewModelProvider.Factory
 }
