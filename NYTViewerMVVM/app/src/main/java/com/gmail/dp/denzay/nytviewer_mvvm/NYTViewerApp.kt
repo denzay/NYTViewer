@@ -20,7 +20,7 @@ class NYTViewerApp: Application(), HasActivityInjector {
 
         DaggerAppComponent
             .builder()
-            .setContext(this)
+            .application(this)
             .build()
             .inject(this)
     }

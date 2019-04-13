@@ -1,10 +1,8 @@
 package com.gmail.dp.denzay.nytviewer_mvvm
 
 import android.os.Bundle
-import android.support.v4.app.Fragment
-import android.support.v4.app.FragmentManager
-import android.support.v4.app.FragmentPagerAdapter
-import android.view.*
+import android.view.Menu
+import android.view.MenuItem
 import com.gmail.dp.denzay.nytviewer_mvvm.presentation.activity_main.news.common.NewsFragmentPageAdapter
 import com.gmail.dp.denzay.nytviewer_mvvm.presentation.common.MainRouter
 import com.gmail.dp.denzay.nytviewer_mvvm.presentation.common.base.BaseActivity
