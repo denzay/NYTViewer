@@ -8,7 +8,7 @@ import io.reactivex.rxkotlin.subscribeBy
 import javax.inject.Inject
 
 class MostSharedViewModel @Inject constructor(
-        private val router: MostSharedContract.Router,
+//        private val router: MostSharedContract.Router,
         private val mostSharedUseCase: MostSharedUseCase
 ) : BaseNewsViewModel(), MostSharedContract.ViewModel {
 

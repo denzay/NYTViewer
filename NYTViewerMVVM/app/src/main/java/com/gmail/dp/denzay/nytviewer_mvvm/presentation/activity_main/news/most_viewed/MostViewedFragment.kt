@@ -5,7 +5,7 @@ import com.gmail.dp.denzay.nytviewer_mvvm.presentation.activity_main.news.common
 
 class MostViewedFragment : BaseNewsFragment() {
 
-    lateinit var viewModel: MostViewedContract.ViewModel
+//    lateinit var viewModel: MostViewedContract.ViewModel
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
