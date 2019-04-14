@@ -16,6 +16,7 @@
 
 package com.gmail.dp.denzay.nytviewer_mvvm.di.modules
 
+import com.gmail.dp.denzay.nytviewer_mvvm.di.scopes.FragmentScope
 import com.gmail.dp.denzay.nytviewer_mvvm.presentation.activity_main.news.most_emailed.MostEmailedFragment
 import com.gmail.dp.denzay.nytviewer_mvvm.presentation.activity_main.news.most_shared.MostSharedFragment
 import com.gmail.dp.denzay.nytviewer_mvvm.presentation.activity_main.news.most_viewed.MostViewedFragment
@@ -25,12 +26,16 @@ import dagger.android.ContributesAndroidInjector
 @Suppress("unused")
 @Module
 interface FragmentBuildersModule {
+
+    @FragmentScope
     @ContributesAndroidInjector
     fun contributeMostEmailedFragment(): MostEmailedFragment
 
+    @FragmentScope
     @ContributesAndroidInjector
     fun contributeMostSharedFragment(): MostSharedFragment
 
+    @FragmentScope
     @ContributesAndroidInjector
     fun contributeMostViewedFragment(): MostViewedFragment
 }

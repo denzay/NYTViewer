@@ -2,11 +2,12 @@ package com.gmail.dp.denzay.nytviewer_mvvm.presentation.common
 
 import android.arch.lifecycle.ViewModel
 import android.arch.lifecycle.ViewModelProvider
+import com.gmail.dp.denzay.nytviewer_mvvm.di.scopes.FragmentScope
 import javax.inject.Inject
 import javax.inject.Provider
 import javax.inject.Singleton
 
-@Singleton
+@FragmentScope
 class ViewModelFactory @Inject constructor(
     private val creators: Map<Class<out ViewModel>, @JvmSuppressWildcards Provider<ViewModel>>
 ) : ViewModelProvider.Factory {

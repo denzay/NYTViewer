@@ -15,17 +15,17 @@ interface ViewModelModule {
     @Binds
     @IntoMap
     @ViewModelKey(MostEmailedViewModel::class)
-    fun bindUserViewModel(mostEmailedViewModel: MostEmailedViewModel): ViewModel
-//
+    fun bindMostEmailedViewModel(mostEmailedViewModel: MostEmailedViewModel): ViewModel
+
 //    @Binds
 //    @IntoMap
 //    @ViewModelKey(MostSharedViewModel::class)
-//    fun bindSearchViewModel(mostSharedViewModel: MostSharedViewModel): ViewModel
+//    fun bindMostSharedViewModel(mostSharedViewModel: MostSharedViewModel): ViewModel
 //
 //    @Binds
 //    @IntoMap
 //    @ViewModelKey(MostViewedViewModel::class)
-//    fun bindRepoViewModel(mostViewedViewModel: MostViewedViewModel): ViewModel
+//    fun bindMostViewedViewModel(mostViewedViewModel: MostViewedViewModel): ViewModel
 
     @Binds
     fun bindViewModelFactory(factory: ViewModelFactory): ViewModelProvider.Factory
