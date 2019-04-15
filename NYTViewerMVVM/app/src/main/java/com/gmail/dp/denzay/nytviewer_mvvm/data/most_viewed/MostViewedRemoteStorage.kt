@@ -8,7 +8,9 @@ import com.gmail.dp.denzay.nytviewer_mvvm.domain.most_viewed.MostViewedModel
 import io.reactivex.Single
 import retrofit2.Retrofit
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class MostViewedRemoteStorage @Inject constructor(errorHandler: NetworkErrorHandler, retrofit: Retrofit) : BaseRemoteStorage(errorHandler) {
 
     private val api: NYTAPI = retrofit.create(NYTAPI::class.java)
