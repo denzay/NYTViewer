@@ -6,7 +6,7 @@ import javax.inject.Inject
 
 class MostSharedViewModel @Inject constructor(
 //        private val router: MostSharedContract.Router,
-//        private val mostSharedUseCase: MostSharedUseCase
+    private val mostSharedUseCase: MostSharedUseCase
 ) : BaseNewsViewModel(), MostSharedContract.ViewModel {
 
     override fun doLoadData() {

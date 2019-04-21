@@ -1,13 +1,13 @@
 package com.gmail.dp.denzay.nytviewer_mvvm.presentation.activity_main.news.most_viewed
 
+import com.gmail.dp.denzay.nytviewer_mvvm.domain.most_viewed.MostViewedUseCase
 import com.gmail.dp.denzay.nytviewer_mvvm.presentation.activity_main.news.common.BaseNewsViewModel
-import com.gmail.dp.denzay.nytviewer_mvvm.presentation.activity_main.news.most_shared.MostSharedContract
 import javax.inject.Inject
 
 class MostViewedViewModel @Inject constructor(
 //        private val router: MostViewedContract.Router,
-//        private val mostViewedUseCase: MostViewedUseCase
-) : BaseNewsViewModel(), MostSharedContract.ViewModel {
+    private val mostViewedUseCase: MostViewedUseCase
+) : BaseNewsViewModel(), MostViewedContract.ViewModel {
 
     override fun doLoadData() {
 //        disposables.add(mostViewedUseCase.getMostViewedList()

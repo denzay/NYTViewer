@@ -10,7 +10,8 @@ class MostSharedFragment : BaseNewsFragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProviders.of(this).get(MostSharedViewModel::class.java)
+
+        viewModel = ViewModelProviders.of(this, viewModelFactory).get(MostSharedViewModel::class.java)
         subscribeToModel(viewModel)
     }
 

@@ -6,9 +6,9 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class MostSharedInteractor @Inject constructor(private val mostSharedUseCase: MostSharedUseCase): BaseInteractor(), MostSharedUseCase {
+class MostSharedInteractor @Inject constructor(private val mostSharedRepository: MostSharedRepository): BaseInteractor(), MostSharedUseCase {
 
     override fun getMostSharedList(): Single<List<MostSharedModel>> =
-            mostSharedUseCase.getMostSharedList()
+        mostSharedRepository.getMostSharedList()
 
 }
