@@ -16,5 +16,7 @@ class MostSharedRemoteStorage @Inject constructor(errorHandler: NetworkErrorHand
     private val api: NYTAPI = retrofit.create(NYTAPI::class.java)
 
     fun getMostSharedList(): Single<List<MostSharedModel>> =
-            api.getSharedArticles(Consts.ARTICLES_PERIOD_DAYS, Consts.API_KEY).compose(doWithExceptionHandler())
+            api.getSharedArticles(Consts.ARTICLES_PERIOD_DAYS, Consts.API_KEY).compose(doWithExceptionHandler()).map {
+                it.mostShared
+            }
 }

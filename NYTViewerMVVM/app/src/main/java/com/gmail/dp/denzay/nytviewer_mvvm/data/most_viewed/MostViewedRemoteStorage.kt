@@ -16,5 +16,7 @@ class MostViewedRemoteStorage @Inject constructor(errorHandler: NetworkErrorHand
     private val api: NYTAPI = retrofit.create(NYTAPI::class.java)
 
     fun getMostViewedList(): Single<List<MostViewedModel>> =
-            api.getViewedArticles(Consts.ARTICLES_PERIOD_DAYS, Consts.API_KEY).compose(doWithExceptionHandler())
+            api.getViewedArticles(Consts.ARTICLES_PERIOD_DAYS, Consts.API_KEY).compose(doWithExceptionHandler()).map {
+                it.mostViewed
+            }
 }

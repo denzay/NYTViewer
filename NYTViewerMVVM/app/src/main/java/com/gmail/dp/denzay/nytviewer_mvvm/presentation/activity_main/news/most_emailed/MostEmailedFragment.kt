@@ -12,11 +12,11 @@ class MostEmailedFragment: BaseNewsFragment() {
         super.onActivityCreated(savedInstanceState)
 
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(MostEmailedViewModel::class.java)
-        subscribeToModel(viewModel)
+        subscribeToModel()
     }
 
-    private fun subscribeToModel(viewModel: MostEmailedContract.ViewModel) {
-
+    private fun subscribeToModel() {
+        viewModel.bound()
     }
 
     companion object {

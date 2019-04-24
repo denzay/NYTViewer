@@ -10,12 +10,12 @@ class MostViewedFragment : BaseNewsFragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        ViewModelProviders.of(this, viewModelFactory).get(MostViewedViewModel::class.java)
-        subscribeToModel(viewModel)
+        viewModel = ViewModelProviders.of(this, viewModelFactory).get(MostViewedViewModel::class.java)
+        subscribeToModel()
     }
 
-    private fun subscribeToModel(viewModel: MostViewedContract.ViewModel) {
-
+    private fun subscribeToModel() {
+        viewModel.bound()
     }
 
     companion object {

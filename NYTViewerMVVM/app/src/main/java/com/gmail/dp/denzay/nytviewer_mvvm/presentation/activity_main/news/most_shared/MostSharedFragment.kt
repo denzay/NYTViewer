@@ -12,11 +12,11 @@ class MostSharedFragment : BaseNewsFragment() {
         super.onActivityCreated(savedInstanceState)
 
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(MostSharedViewModel::class.java)
-        subscribeToModel(viewModel)
+        subscribeToModel()
     }
 
-    private fun subscribeToModel(viewModel: MostSharedContract.ViewModel) {
-
+    private fun subscribeToModel() {
+        viewModel.bound()
     }
 
     companion object {

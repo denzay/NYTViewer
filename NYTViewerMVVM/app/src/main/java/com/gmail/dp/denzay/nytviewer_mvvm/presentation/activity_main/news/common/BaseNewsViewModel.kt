@@ -3,6 +3,7 @@ package com.gmail.dp.denzay.nytviewer_mvvm.presentation.activity_main.news.commo
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MediatorLiveData
 import android.arch.lifecycle.MutableLiveData
+import android.util.Log
 import com.gmail.dp.denzay.nytviewer_mvvm.domain.news_item.NewsItem
 import com.gmail.dp.denzay.nytviewer_mvvm.presentation.common.base.BaseViewModelImpl
 
@@ -27,5 +28,9 @@ abstract class BaseNewsViewModel : BaseViewModelImpl(), BaseNewsContract.NewsVie
 
     override fun showNoInternetToast() {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    protected fun processResponseError(error: Throwable) {
+        Log.e("NYT", error.message)
     }
 }

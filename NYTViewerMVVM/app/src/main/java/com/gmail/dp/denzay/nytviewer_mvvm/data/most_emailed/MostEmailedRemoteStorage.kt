@@ -17,5 +17,7 @@ class MostEmailedRemoteStorage @Inject constructor(errorHandler: NetworkErrorHan
     private val api: NYTAPI = retrofit.create(NYTAPI::class.java)
 
     fun getMostEmailedList(): Single<List<MostEmailedModel>> =
-            api.getEmailedArticles(ARTICLES_PERIOD_DAYS, API_KEY).compose(doWithExceptionHandler())
+            api.getEmailedArticles(ARTICLES_PERIOD_DAYS, API_KEY).compose(doWithExceptionHandler()).map {
+                it.mostEmailed
+            }
 }
