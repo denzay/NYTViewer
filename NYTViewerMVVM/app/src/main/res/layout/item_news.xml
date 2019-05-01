@@ -6,7 +6,7 @@
 
         <variable
             name="newsItem"
-            type="com.gmail.dp.denzay.nytviewer_mvvm.domain.news_item.NewsItem" />
+            type="com.gmail.dp.denzay.nytviewer_mvvm.presentation.common.models.NewsItem" />
 
         <variable
             name="onClickListener"

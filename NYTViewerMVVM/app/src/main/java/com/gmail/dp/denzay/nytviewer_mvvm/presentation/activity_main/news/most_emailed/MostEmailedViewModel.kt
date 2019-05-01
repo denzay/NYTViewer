@@ -1,8 +1,8 @@
 package com.gmail.dp.denzay.nytviewer_mvvm.presentation.activity_main.news.most_emailed
 
 import com.gmail.dp.denzay.nytviewer_mvvm.domain.most_emailed.MostEmailedUseCase
-import com.gmail.dp.denzay.nytviewer_mvvm.domain.news_item.NewsItem
 import com.gmail.dp.denzay.nytviewer_mvvm.presentation.activity_main.news.common.BaseNewsViewModel
+import com.gmail.dp.denzay.nytviewer_mvvm.presentation.common.models.NewsItem
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.subscribeBy
@@ -23,7 +23,7 @@ class MostEmailedViewModel @Inject constructor(
                 .flatMap {
                     val list = mutableListOf<NewsItem>()
                     it.map { mostEmailedModel->
-                        val newsItem = NewsItem(mostEmailedModel.id!!, mostEmailedModel.url!!, mostEmailedModel.title!!, mostEmailedModel.shortDesc!!, "")
+                        val newsItem = NewsItem(mostEmailedModel.id!!, mostEmailedModel.url!!, mostEmailedModel.title!!, mostEmailedModel.shortDesc!!, mostEmailedModel.getFirstImageInfo()?.url)
                         list.add(newsItem)
                     }
                     return@flatMap Single.just(list)

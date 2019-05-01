@@ -28,7 +28,7 @@ class MostEmailedFragment: BaseNewsFragment() {
                 binding.swipeContainer.isRefreshing = it
             }
         })
-        
+
         viewModel.newsList.observe(this, Observer { observeValue ->
             observeValue?.let {
                 adapter.setData(it)

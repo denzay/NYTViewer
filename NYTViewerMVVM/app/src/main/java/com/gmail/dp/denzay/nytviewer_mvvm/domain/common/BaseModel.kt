@@ -54,4 +54,15 @@ open class BaseModel {
         }
         return result
     }
+
+    fun getFirstImageInfo(): MediaInfoItem.ImageInfoItem? {
+        var result = getLargeImageInfo()
+        if (result == null) {
+            result = getMediumImageInfo()
+            if (result == null)
+                result = getSmallImageInfo()
+        }
+        return result
+    }
+
 }

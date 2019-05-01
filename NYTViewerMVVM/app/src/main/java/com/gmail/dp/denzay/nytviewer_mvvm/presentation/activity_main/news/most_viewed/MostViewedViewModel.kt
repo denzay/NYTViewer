@@ -1,8 +1,8 @@
 package com.gmail.dp.denzay.nytviewer_mvvm.presentation.activity_main.news.most_viewed
 
 import com.gmail.dp.denzay.nytviewer_mvvm.domain.most_viewed.MostViewedUseCase
-import com.gmail.dp.denzay.nytviewer_mvvm.domain.news_item.NewsItem
 import com.gmail.dp.denzay.nytviewer_mvvm.presentation.activity_main.news.common.BaseNewsViewModel
+import com.gmail.dp.denzay.nytviewer_mvvm.presentation.common.models.NewsItem
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.subscribeBy

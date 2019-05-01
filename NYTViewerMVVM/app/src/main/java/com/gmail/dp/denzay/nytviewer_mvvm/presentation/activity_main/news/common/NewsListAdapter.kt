@@ -7,7 +7,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import com.gmail.dp.denzay.nytviewer_mvvm.R
 import com.gmail.dp.denzay.nytviewer_mvvm.databinding.ItemNewsBinding
-import com.gmail.dp.denzay.nytviewer_mvvm.domain.news_item.NewsItem
+import com.gmail.dp.denzay.nytviewer_mvvm.presentation.common.models.NewsItem
 
 class NewsListAdapter : RecyclerView.Adapter<NewsHolder>(), android.databinding.DataBindingComponent {
 
