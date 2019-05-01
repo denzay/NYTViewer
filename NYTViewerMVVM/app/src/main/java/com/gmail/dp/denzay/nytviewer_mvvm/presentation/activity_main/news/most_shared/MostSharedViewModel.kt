@@ -15,14 +15,13 @@ class MostSharedViewModel @Inject constructor(
 ) : BaseNewsViewModel(), MostSharedContract.ViewModel {
 
     override fun doLoadData() {
-
         disposables.add(mostSharedUseCase.getMostSharedList()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
                 .flatMap {
                     val list = mutableListOf<NewsItem>()
                     it.map {mostSharedModel ->
-                        val newsItem = NewsItem(mostSharedModel.id!!, mostSharedModel.url!!, mostSharedModel.title!!, mostSharedModel.shortDesc!!, "")
+                        val newsItem = NewsItem(mostSharedModel.id!!, mostSharedModel.url!!, mostSharedModel.title!!, mostSharedModel.shortDesc!!, mostSharedModel.getFirstImageInfo()?.url)
                         list.add(newsItem)
                     }
                     return@flatMap Single.just(list)

@@ -15,7 +15,6 @@ class MostEmailedViewModel @Inject constructor(
 ) : BaseNewsViewModel(), MostEmailedContract.ViewModel {
 
     override fun doLoadData() {
-
         disposables.add(mostEmailedUseCase.getMostEmailedList()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())

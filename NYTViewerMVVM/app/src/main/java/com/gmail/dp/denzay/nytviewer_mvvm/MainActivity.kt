@@ -1,8 +1,11 @@
 package com.gmail.dp.denzay.nytviewer_mvvm
 
+import android.databinding.DataBindingUtil
 import android.os.Bundle
+import android.support.design.widget.TabLayout
 import android.view.Menu
 import android.view.MenuItem
+import com.gmail.dp.denzay.nytviewer_mvvm.databinding.ActivityMainBinding
 import com.gmail.dp.denzay.nytviewer_mvvm.presentation.activity_main.news.common.NewsFragmentPageAdapter
 import com.gmail.dp.denzay.nytviewer_mvvm.presentation.common.MainRouter
 import com.gmail.dp.denzay.nytviewer_mvvm.presentation.common.base.BaseActivity
@@ -18,11 +21,15 @@ class MainActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+
+        val binding = DataBindingUtil.setContentView<ActivityMainBinding>(this, R.layout.activity_main)
 
         setSupportActionBar(toolbar)
         mSectionsPagerAdapter = NewsFragmentPageAdapter(supportFragmentManager)
         container.adapter = mSectionsPagerAdapter
+
+        container.addOnPageChangeListener(TabLayout.TabLayoutOnPageChangeListener(binding.tabs))
+        binding.tabs.addOnTabSelectedListener(TabLayout.ViewPagerOnTabSelectedListener(container))
     }
 
 

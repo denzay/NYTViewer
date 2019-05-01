@@ -6,16 +6,10 @@ import com.gmail.dp.denzay.nytviewer_mvvm.presentation.activity_main.news.common
 
 class MostViewedFragment : BaseNewsFragment() {
 
-    lateinit var viewModel: MostViewedContract.ViewModel
-
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(MostViewedViewModel::class.java)
         subscribeToModel()
-    }
-
-    private fun subscribeToModel() {
-        viewModel.bound()
     }
 
     companion object {

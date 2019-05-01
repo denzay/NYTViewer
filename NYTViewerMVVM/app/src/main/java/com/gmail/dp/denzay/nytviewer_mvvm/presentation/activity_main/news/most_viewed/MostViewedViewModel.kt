@@ -21,7 +21,7 @@ class MostViewedViewModel @Inject constructor(
                 .flatMap {
                     val list = mutableListOf<NewsItem>()
                     it.map {mostViewedModel ->
-                        val newsItem = NewsItem(mostViewedModel.id!!, mostViewedModel.url!!, mostViewedModel.title!!, mostViewedModel.shortDesc!!, "")
+                        val newsItem = NewsItem(mostViewedModel.id!!, mostViewedModel.url!!, mostViewedModel.title!!, mostViewedModel.shortDesc!!, mostViewedModel.getFirstImageInfo()?.url)
                         list.add(newsItem)
                     }
                     return@flatMap Single.just(list)
