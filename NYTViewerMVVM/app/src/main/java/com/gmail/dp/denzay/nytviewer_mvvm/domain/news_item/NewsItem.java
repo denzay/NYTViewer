@@ -30,6 +30,19 @@ public class NewsItem implements Parcelable {
     }
 
     @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+
+        NewsItem newsItem = (NewsItem) obj;
+        return id == newsItem.id &&
+                url.equals(newsItem.url) &&
+                title.equals(newsItem.title) &&
+                shortDescription.equals(newsItem.shortDescription) &&
+                imgUrl.equals(newsItem.imgUrl);
+    }
+
+    @Override
     public int describeContents() {
         return 0;
     }
