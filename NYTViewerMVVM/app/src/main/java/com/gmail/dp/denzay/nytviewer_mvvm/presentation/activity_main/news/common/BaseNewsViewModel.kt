@@ -1,7 +1,5 @@
 package com.gmail.dp.denzay.nytviewer_mvvm.presentation.activity_main.news.common
 
-import android.arch.lifecycle.LiveData
-import android.arch.lifecycle.MediatorLiveData
 import android.arch.lifecycle.MutableLiveData
 import android.util.Log
 import com.gmail.dp.denzay.nytviewer_mvvm.domain.news_item.NewsItem
@@ -9,15 +7,8 @@ import com.gmail.dp.denzay.nytviewer_mvvm.presentation.common.base.BaseViewModel
 
 abstract class BaseNewsViewModel : BaseViewModelImpl(), BaseNewsContract.NewsViewModel {
 
-    protected val newsList: MediatorLiveData<MutableList<NewsItem>> = MediatorLiveData()
-    protected val _isLoading: MutableLiveData<Boolean> = MutableLiveData()
-
-    val isLoading: LiveData<Boolean>
-        get() = _isLoading
-
-    init {
-        _isLoading.value = false
-    }
+    override val newsList = MutableLiveData<MutableList<NewsItem>>()
+    override val isLoading = MutableLiveData<Boolean>().apply { value = false }
 
     protected abstract fun doLoadData()
 
