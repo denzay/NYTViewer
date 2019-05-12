@@ -12,6 +12,7 @@
     <string name="warning_save_page">Please wait until the page has been downloaded</string>
     <string name="warning_got_it">Got it!</string>
 
+    <string name="error_no_internet">No internet. Please, check your internet connection</string>
     <string name="api_error_rate_limit">Too many requests. Please try again later</string>
 
 </resources>

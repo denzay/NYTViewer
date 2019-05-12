@@ -18,6 +18,7 @@ class MostViewedViewModel @Inject constructor(
         disposables.add(mostViewedUseCase.getMostViewedList()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
+            .doOnSubscribe { isLoading.value = true }
                 .flatMap {
                     val list = mutableListOf<NewsItem>()
                     it.map {mostViewedModel ->
@@ -26,6 +27,7 @@ class MostViewedViewModel @Inject constructor(
                     }
                     return@flatMap Single.just(list)
                 }
+            .doFinally { isLoading.value = false }
                 .subscribeBy(onSuccess = {
                     newsList.postValue(it)
                 },

@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import com.gmail.dp.denzay.nytviewer_mvvm.R
 import com.gmail.dp.denzay.nytviewer_mvvm.databinding.FragmentNewsitemListBinding
 import com.gmail.dp.denzay.nytviewer_mvvm.presentation.activity_main.news.most_emailed.MostEmailedContract
@@ -26,6 +27,11 @@ open class BaseNewsFragment: BaseFragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         AndroidSupportInjection.inject(this)
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_newsitem_list, container, false)
+
+        binding.swipeContainer.setOnRefreshListener {
+            viewModel.refreshData()
+        }
+
         adapter = NewsListAdapter()
         binding.recyclerView.adapter = adapter
         return binding.root
@@ -45,17 +51,9 @@ open class BaseNewsFragment: BaseFragment() {
                 adapter.setData(it)
             }
         })
-    }
-//    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =null {
-////    //    val binding = NewsItemListDataBinding.inflate(inflater,  container, false)
-////
-////       // binding.swipeContainer.setOnRefreshListener()
-//////        binding.swipeContainer.setColorSchemeResources(R.color.colorPrimary)
-//////
-//////
-//////        return binding.getRoot()
-//////
-//////
-//////    }
 
+        viewModel.doShowNoInternetToast.observe(this, Observer {
+            Toast.makeText(requireContext(), R.string.error_no_internet, Toast.LENGTH_LONG).show()
+        })
+    }
 }
