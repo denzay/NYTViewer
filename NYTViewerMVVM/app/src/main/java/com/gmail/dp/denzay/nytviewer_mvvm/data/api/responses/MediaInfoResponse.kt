@@ -1,9 +1,9 @@
-package com.gmail.dp.denzay.nytviewer_mvvm.domain.common
+package com.gmail.dp.denzay.nytviewer_mvvm.data.api.responses
 
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 
-class MediaInfoItem {
+class MediaInfoResponse {
     @SerializedName("type")
     @Expose
     private val type: String? = null

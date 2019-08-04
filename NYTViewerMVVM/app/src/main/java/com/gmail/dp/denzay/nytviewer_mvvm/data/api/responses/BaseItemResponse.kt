@@ -1,10 +1,11 @@
-package com.gmail.dp.denzay.nytviewer_mvvm.domain.common
+package com.gmail.dp.denzay.nytviewer_mvvm.data.api.responses
 
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
-import java.util.*
+import java.util.Date
 
-open class BaseModel {
+
+open class BaseItemResponse {
 
     @SerializedName("id")
     @Expose
@@ -23,10 +24,10 @@ open class BaseModel {
     var publishedDate: Date? = null
     @SerializedName("media")
     @Expose
-    var media: List<MediaInfoItem>? = null
+    var media: List<MediaInfoResponse>? = null
 
-    fun getSmallImageInfo(): MediaInfoItem.ImageInfoItem? {
-        var result: MediaInfoItem.ImageInfoItem? = null
+    fun getSmallImageInfo(): MediaInfoResponse.ImageInfoItem? {
+        var result: MediaInfoResponse.ImageInfoItem? = null
 
         media?.let {
             if(it.isNotEmpty() && it[0].mediaMetadata.size >= 1)
@@ -35,8 +36,8 @@ open class BaseModel {
         return result
     }
 
-    fun getMediumImageInfo(): MediaInfoItem.ImageInfoItem? {
-        var result: MediaInfoItem.ImageInfoItem? = null
+    fun getMediumImageInfo(): MediaInfoResponse.ImageInfoItem? {
+        var result: MediaInfoResponse.ImageInfoItem? = null
 
         media?.let {
             if(it.isNotEmpty() && it[0].mediaMetadata.size >= 2)
@@ -45,8 +46,8 @@ open class BaseModel {
         return result
     }
 
-    fun getLargeImageInfo(): MediaInfoItem.ImageInfoItem? {
-        var result: MediaInfoItem.ImageInfoItem? = null
+    fun getLargeImageInfo(): MediaInfoResponse.ImageInfoItem? {
+        var result: MediaInfoResponse.ImageInfoItem? = null
 
         media?.let {
             if(it.isNotEmpty() && it[0].mediaMetadata.size >= 3)
@@ -55,7 +56,7 @@ open class BaseModel {
         return result
     }
 
-    fun getFirstImageInfo(): MediaInfoItem.ImageInfoItem? {
+    fun getFirstImageInfo(): MediaInfoResponse.ImageInfoItem? {
         var result = getLargeImageInfo()
         if (result == null) {
             result = getMediumImageInfo()

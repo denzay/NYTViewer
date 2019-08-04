@@ -1,12 +1,10 @@
 package com.gmail.dp.denzay.nytviewer_mvvm.data.api.responses
 
-import com.gmail.dp.denzay.nytviewer_mvvm.domain.most_viewed.MostViewedModel
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 
-class MostViewedResponse : BaseResponse() {
-
-    @SerializedName("results")
-    @Expose
-    val mostViewed: List<MostViewedModel>? = null
-}
+class MostViewedResponse(
+        @SerializedName("views")
+        @Expose
+        private val viewsCount: Int? = null
+) : BaseItemResponse()

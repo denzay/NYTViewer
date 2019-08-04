@@ -3,7 +3,7 @@ package com.gmail.dp.denzay.nytviewer_mvvm.data.api.responses
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 
-open class BaseResponse {
+open class BaseListResponse {
 
         @SerializedName("status")
         @Expose

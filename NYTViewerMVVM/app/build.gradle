@@ -6,6 +6,8 @@ apply plugin: 'kotlin-android-extensions'
 
 apply plugin: 'kotlin-kapt'
 
+apply plugin: 'realm-android'
+
 android {
     compileSdkVersion 28
     buildToolsVersion = '28.0.3'
@@ -31,6 +33,10 @@ android {
 
     dataBinding {
         enabled = true
+    }
+
+    realm {
+        syncEnabled = true
     }
 }
 
@@ -71,4 +77,7 @@ dependencies {
 
     // Glide
     implementation "com.github.bumptech.glide:glide:$glide_version"
+
+    // Realm
+    implementation 'io.realm:android-adapters:3.1.0'
 }

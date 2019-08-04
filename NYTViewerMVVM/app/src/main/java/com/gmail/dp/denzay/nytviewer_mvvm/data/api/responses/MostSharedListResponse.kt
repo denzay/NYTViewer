@@ -3,10 +3,10 @@ package com.gmail.dp.denzay.nytviewer_mvvm.data.api.responses
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 
-class MostEmailedResponse(
+class MostSharedListResponse : BaseListResponse() {
 
-        @SerializedName("email_count")
-        @Expose
-        var emailCount: Int? = null
+    @SerializedName("results")
+    @Expose
+    val mostShared: List<MostSharedResponse>? = null
 
-) : BaseItemResponse()
+}

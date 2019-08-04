@@ -4,7 +4,7 @@ import com.gmail.dp.denzay.nytviewer_mvvm.Consts
 import com.gmail.dp.denzay.nytviewer_mvvm.data.api.NYTAPI
 import com.gmail.dp.denzay.nytviewer_mvvm.data.common.BaseRemoteStorage
 import com.gmail.dp.denzay.nytviewer_mvvm.data.common.NetworkErrorHandler
-import com.gmail.dp.denzay.nytviewer_mvvm.domain.most_viewed.MostViewedModel
+import com.gmail.dp.denzay.nytviewer_mvvm.data.api.responses.MostViewedResponse
 import io.reactivex.Single
 import retrofit2.Retrofit
 import javax.inject.Inject
@@ -15,7 +15,7 @@ class MostViewedRemoteStorage @Inject constructor(errorHandler: NetworkErrorHand
 
     private val api: NYTAPI = retrofit.create(NYTAPI::class.java)
 
-    fun getMostViewedList(): Single<List<MostViewedModel>> =
+    fun getMostViewedList(): Single<List<MostViewedResponse>> =
             api.getViewedArticles(Consts.ARTICLES_PERIOD_DAYS, Consts.API_KEY).compose(doWithExceptionHandler()).map {
                 it.mostViewed
             }
