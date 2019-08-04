@@ -1,6 +1,5 @@
 package com.gmail.dp.denzay.nytviewer_mvvm.domain.common
 
-import com.gmail.dp.denzay.nytviewer_mvvm.domain.common.BaseUsecase
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 
